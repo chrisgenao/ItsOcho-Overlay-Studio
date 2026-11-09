@@ -121,7 +121,10 @@ body.preview #stage{background:linear-gradient(125deg,#173445,#242136 45%,#141b3
 .cinema .game-title{font-size:19px}
 .cinema .chapter.expanded{height:49px}
 .cinema .timeline{width:670px;bottom:31px;opacity:.75}
-.cinema .cam{opacity:0;pointer-events:none}
+/* Trailer mode leaves the webcam frame visible, independently of the PS5. */
+#stage.cinema:not(.cam-off) .cam{opacity:1!important;transform:none!important;animation:none!important;pointer-events:none}
+#stage.cinema .ps5-capture{opacity:0!important;visibility:hidden!important}
+#stage:not(.cinema) .ps5-capture{visibility:visible}
 .cinema.tl-hidden .timeline{opacity:0}
 
 /* Preview helper only; never appears as a background in OBS. */
