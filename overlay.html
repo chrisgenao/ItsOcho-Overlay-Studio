@@ -106,7 +106,7 @@ body.preview #stage{background:linear-gradient(125deg,#173445,#242136 45%,#141b3
 #stage.loading .ps5-capture,#stage.phase-hud-out .ps5-capture,
 #stage.phase-door-close .ps5-capture,#stage.phase-intro .ps5-capture,
 #stage.phase-door-open .ps5-capture{opacity:0!important}
-#stage.phase-hud-in .ps5-capture.ps5-visible{animation:ps5Reveal .6s .7s both}
+#stage.phase-hud-in:not(.cinema) .ps5-capture.ps5-visible{animation:ps5Reveal .6s .7s both}
 @keyframes ps5Reveal{from{opacity:0;transform:translateY(15px) scale(.985)}to{opacity:1;transform:none}}
 
 .tl-hidden .timeline{opacity:0;transform:translateY(7px)}
@@ -121,10 +121,8 @@ body.preview #stage{background:linear-gradient(125deg,#173445,#242136 45%,#141b3
 .cinema .game-title{font-size:19px}
 .cinema .chapter.expanded{height:49px}
 .cinema .timeline{width:670px;bottom:31px;opacity:.75}
-/* Trailer mode leaves the webcam frame visible, independently of the PS5. */
-#stage.cinema:not(.cam-off) .cam{opacity:1!important;transform:none!important;animation:none!important;pointer-events:none}
-#stage.cinema .ps5-capture{opacity:0!important;visibility:hidden!important}
-#stage:not(.cinema) .ps5-capture{visibility:visible}
+/* Trailer mode preserves the webcam frame and only hides the PS5 frame. */
+.cinema .ps5-capture{opacity:0!important;pointer-events:none!important}
 .cinema.tl-hidden .timeline{opacity:0}
 
 /* Preview helper only; never appears as a background in OBS. */
