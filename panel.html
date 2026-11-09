@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ItsOcho · Timeline v5.13 · Control Studio</title>
+<title>ItsOcho · Timeline v5.15 · Control Studio</title>
 <style>
 :root{--bg:#0d1020;--card:#151b30;--card2:#1b2339;--line:#313b55;--muted:#a9b4cf;--pink:#f77aac;--cyan:#60dfe8;--white:#f9f9ff;--gold:#ffca75}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 10% 0%,#32224b 0%,transparent 38%),radial-gradient(ellipse at 100% 0%,#103b4b 0%,transparent 30%),var(--bg);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--white)}
@@ -32,6 +32,37 @@ header{display:flex;justify-content:space-between;align-items:center;gap:20px;fl
 .music-upload{position:relative;overflow:hidden;display:flex;align-items:center;cursor:pointer}.music-upload input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
 .music-help{font-size:12px;line-height:1.7;color:#b9c7e2;margin:8px 0}.music-setup{margin:18px 0 0}.music-setup code{color:#b4f4f0;font-size:12px;overflow-wrap:anywhere}.music-setup b{color:#fff}
 @media(max-width:620px){.music-row{grid-template-columns:1fr}.music-card{padding:15px}}
+
+
+/* v5.15 — Independent soundtrack assignment for every GTA, even outside the live queue. */
+.music-library-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin:20px 0 12px}
+.music-library-header h3{margin:0 0 5px;font-size:18px}
+.music-library-header p{margin:0;color:#b8c7dc;font-size:12px;line-height:1.5}
+.music-counts{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.music-library-tools{display:grid;grid-template-columns:minmax(230px,1fr) auto;align-items:center;gap:12px;margin:12px 0 14px}
+.music-library-tools input[type=search]{width:100%;min-height:44px;padding:11px 14px;background:#10182b;color:#fff;border:1px solid #52647c;border-radius:11px;font:inherit;font-size:13px}
+.music-library-tools label{display:flex;align-items:center;gap:8px;color:#c8d5e8;cursor:pointer;font-size:12px}
+.music-library-tools input[type=checkbox]{accent-color:#ff83b6;width:16px;height:16px}
+.music-track-list{display:flex;flex-direction:column;gap:9px;max-height:min(56vh,640px);overflow-y:auto;overscroll-behavior:contain;padding:2px 5px 3px 0}
+.music-track{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px;border:1px solid #374962;border-radius:12px;background:#0e1729b8;min-height:84px}
+.music-track.is-current{border-color:#f08fbd;background:linear-gradient(105deg,#302239,#101e35)}
+.music-track.is-outside{border-style:dashed;border-color:#43516a}
+.music-track[hidden]{display:none!important}
+.music-track-number{display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:#283451;color:#e8f1ff;font-size:12px;font-weight:900}
+.music-track-info{min-width:0}.music-track-heading{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.music-track-title{font-size:13px;font-weight:850;line-height:1.4}.music-track-year{color:#bac8df;font-size:11px}
+.music-track-tag{font-size:10px;border:1px solid #736489;color:#ffbedf;border-radius:6px;padding:2px 6px}
+.music-track-tag.outside{color:#acbcd5;border-color:#526075}
+.music-track-status{display:block;color:#a9bbd5;font-size:12px;line-height:1.45;margin-top:5px;overflow-wrap:anywhere;word-break:break-word}
+.music-track-status.is-ready{color:#9aebd7}
+.music-track-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.music-track-actions .mini{padding:9px 12px;min-height:35px;font-size:12px;white-space:nowrap}
+.music-track-actions .mini:disabled{opacity:.46;cursor:not-allowed}
+.music-track-actions .mini.pick{background:#233957;border-color:#53738d}
+.music-library-feedback{min-height:20px;font-size:12px;color:#a7efe0;margin:13px 0 5px;line-height:1.5}
+.music-library-feedback.is-error{color:#ffb2c1}
+@media(max-width:790px){.music-track{grid-template-columns:32px minmax(0,1fr)}.music-track-number{width:30px;height:30px}.music-track-actions{grid-column:2;justify-content:flex-start}}
+@media(max-width:540px){.music-library-tools{grid-template-columns:1fr}.music-track{padding:10px;gap:8px}.music-track-list{max-height:65vh}.music-track-actions .mini{flex:1}}
 
 /* Cinematic chapter transitions — OBS stays unaffected by this panel layout. */
 .cine-card{border:1px solid #b16a9959;background:linear-gradient(120deg,#241b37,#132c3c);border-radius:18px;padding:20px;margin:12px 0 23px;box-shadow:0 8px 40px #0003}
@@ -240,11 +271,19 @@ body{background:#0b101e}
     <label>Volumen <strong id="volume-label">55%</strong><input type="range" id="music-volume" min="0" max="100" step="1" value="55"></label>
     <label>Máximo de segundos por presentación <strong id="seconds-label">20 s</strong><input type="range" id="music-seconds" min="3" max="120" step="1" value="20"></label>
   </div>
-  <div class="music-file-card">
-    <div class="music-title"><div><small>CANCIÓN DEL CAPÍTULO ACTUAL</small><h3 id="music-game-name">Grand Theft Auto</h3><p id="music-file-status">Sin audio asignado</p></div><span id="music-counter" class="music-pill">0/19</span></div>
-    <div class="music-actions"><label class="mini music-upload">↑ Elegir audio de mi PC<input type="file" id="upload-music" accept=".mp3,.wav,.ogg,.m4a,.webm,.flac,audio/*"></label><button class="mini" id="music-delete" type="button">✕ Quitar canción</button></div>
-    <p class="music-help">Formato: MP3 recomendado (hasta 30 MB). El audio se guarda en <code>musica/</code>. Puedes asignar archivos distintos a los 19 capítulos.</p>
+  <div class="music-live-indicator music-help"><b>Controles de reproducción:</b> actúan sobre el GTA que está en directo: <strong id="music-live-name">Grand Theft Auto</strong>. Asignar canciones abajo no cambia el capítulo ni inicia música.</div>
+  <div class="music-library-header">
+    <div><h3>Biblioteca de canciones por GTA</h3><p>Elige la canción de cada título sin cambiar lo que se muestra en OBS. Los juegos fuera de la cola también se pueden configurar.</p></div>
+    <div class="music-counts"><span id="music-counter" class="music-pill">0 / 19 con canción</span><span id="music-queue-count" class="music-pill">0 / 19 en cola</span></div>
   </div>
+  <div class="music-library-tools">
+    <input id="music-filter" type="search" placeholder="Buscar GTA por título o año..." aria-label="Buscar títulos para asignar música">
+    <label><input id="music-only-queue" type="checkbox"> Mostrar solo los GTA de la cola</label>
+  </div>
+  <div id="music-track-list" class="music-track-list" aria-label="Canciones asignadas a cada GTA"></div>
+  <input id="upload-music" type="file" hidden accept=".mp3,.wav,.ogg,.m4a,.webm,.flac,audio/*" aria-label="Seleccionar canción para el juego elegido">
+  <p id="music-feedback" class="music-library-feedback" role="status" aria-live="polite">Puedes configurar cualquier GTA antes de empezar el directo.</p>
+  <p class="music-help">Formato: MP3 recomendado (hasta 30 MB por archivo). El audio se guarda en <code>musica/</code>. Cada canción queda vinculada al título elegido.</p>
   <div class="music-help music-setup"><b>Una sola vez en OBS:</b> añade una fuente <b>Navegador</b> llamada “ItsOcho Música GTA” con URL <code>http://127.0.0.1:8767/music</code>, tamaño 1×1 y activa <b>Controlar audio mediante OBS</b>. Deja esta fuente visible y silencia su monitorización para evitar doble sonido. <b>El logo usa esa fuente para detectar los bajos; si no llega señal, se mueve con un pulso visual de respaldo. No dupliques la fuente de audio.</b></div>
 </section>
 <div class="bar"><h2>Elegir capítulo directamente</h2><span>Los desactivados no aparecen en la cola ni pueden seleccionarse</span></div><div id="chapters" class="chapters"></div>
@@ -273,7 +312,7 @@ const games=[
 ];
 const $=id=>document.getElementById(id);
 let state={index:0,camera:false,timeline:true,hudVisible:true,cinema:false,logos:true,flash:0,revision:0,musicEnabled:true,musicVolume:55,musicSeconds:20,musicCue:0,musicStop:0,transitionEnabled:true,transitionPhase:'idle',transitionToken:0,phaseSince:0,introToken:0,beatLevel:0,ps5Frame:false,ps5X:1320,ps5Y:135,ps5Width:520,camX:1588,camY:799,camWidth:280};
-let musicTracks=[];let currentMusicIndex=-1;
+let musicTracks=[];const musicBusyIndices=new Set();const musicPendingLabels=new Map();let musicPickIndex=null;
 const allIndices=Array.from({length:games.length},(_,i)=>i);
 const defaultMain=[0,2,3,4,5,9,13,18];
 let queueSignature='',pendingConfig=null,sendingConfig=null,configBusy=false;
@@ -372,7 +411,7 @@ $('year').textContent=g[0];$('title').textContent=g[1];$('note').textContent=g[2
  if(document.activeElement!==$('music-volume')){$('music-volume').value=s.musicVolume;}
  if(document.activeElement!==$('music-seconds')){$('music-seconds').value=s.musicSeconds;}
  $('volume-label').textContent=$('music-volume').value+'%';$('seconds-label').textContent=$('music-seconds').value+' s';
- $('music-game-name').textContent=g[1];if(currentMusicIndex!==s.index){currentMusicIndex=s.index;renderMusicInfo()}
+ $('music-live-name').textContent=g[1];renderMusicInfo();
  $('prev').disabled=position===0||busy;$('next').disabled=position===queue.length-1||busy;$('last').disabled=busy;
  $('last').textContent='Ir a '+games[queue[queue.length-1]][1]+' ⏭';
  document.querySelectorAll('[data-jump]').forEach(el=>{const i=Number(el.dataset.jump);el.classList.toggle('active',i===s.index);el.classList.toggle('disabled-game',!queue.includes(i))});}
@@ -691,8 +730,46 @@ $('upload-logo').addEventListener('change',async e=>{
 async function musicCommand(action,extras={}){
  try{const r=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...extras})});const data=await r.json();if(!r.ok)throw Error(data.error||'No se pudo actualizar');render(data)}catch(e){alert('Música: '+e.message)}
 }
-function renderMusicInfo(){const track=musicTracks[state.index];$('music-file-status').textContent=track?.ready?('✓ '+track.name):'Sin audio asignado — el cambio de GTA será silencioso';$('music-counter').textContent=activeQueue().filter(i=>musicTracks[i]?.ready).length+'/'+activeQueue().length;$('music-delete').disabled=!track?.ready}
+// Each row has an immutable GTA index. Assignments never send /api/update or change state.index.
+const musicTrackList=$('music-track-list');
+const musicRows=games.map((g,i)=>{
+ const row=document.createElement('div');row.className='music-track';row.dataset.musicIndex=String(i);
+ const number=document.createElement('span');number.className='music-track-number';number.textContent=String(i+1).padStart(2,'0');
+ const info=document.createElement('div');info.className='music-track-info';
+ const heading=document.createElement('div');heading.className='music-track-heading';
+ const title=document.createElement('span');title.className='music-track-title';title.textContent=g[1];
+ const year=document.createElement('span');year.className='music-track-year';year.textContent=g[0];
+ const current=document.createElement('span');current.className='music-track-tag';current.textContent='En directo';current.hidden=true;
+ const outside=document.createElement('span');outside.className='music-track-tag outside';outside.textContent='Fuera de cola';outside.hidden=true;
+ heading.append(title,year,current,outside);
+ const status=document.createElement('span');status.className='music-track-status';status.textContent='Sin canción asignada';
+ info.append(heading,status);
+ const actions=document.createElement('div');actions.className='music-track-actions';
+ const pick=document.createElement('button');pick.className='mini pick';pick.type='button';pick.dataset.musicPick=String(i);pick.textContent='Asignar audio';pick.setAttribute('aria-label','Asignar o cambiar canción para '+g[1]);
+ const remove=document.createElement('button');remove.className='mini';remove.type='button';remove.dataset.musicRemove=String(i);remove.textContent='Quitar';remove.setAttribute('aria-label','Quitar canción de '+g[1]);remove.disabled=true;
+ actions.append(pick,remove);row.append(number,info,actions);musicTrackList.append(row);
+ return {row,status,pick,remove,current,outside};
+});
+function showMusicFeedback(message,error=false){const el=$('music-feedback');el.textContent=message;el.classList.toggle('is-error',error)}
+function renderMusicInfo(){
+ const queue=activeQueue(),qset=new Set(queue),query=$('music-filter').value.trim().toLocaleLowerCase(),onlyQueue=$('music-only-queue').checked;
+ $('music-counter').textContent=musicTracks.filter(t=>t?.ready).length+' / '+games.length+' con canción';
+ $('music-queue-count').textContent=queue.filter(i=>musicTracks[i]?.ready).length+' / '+queue.length+' en cola';
+ $('music-live-name').textContent=games[state.index]?.[1]||'Grand Theft Auto';
+ for(let i=0;i<games.length;i++){
+  const r=musicRows[i],track=musicTracks[i],ready=!!track?.ready,busy=musicBusyIndices.has(i),inside=qset.has(i);
+  r.current.hidden=i!==state.index;r.outside.hidden=inside;
+  r.row.classList.toggle('is-current',i===state.index);r.row.classList.toggle('is-outside',!inside);
+  r.row.hidden=(onlyQueue&&!inside)||!!(query&&!((games[i][0]+' '+games[i][1]+' '+(track?.name||'')).toLocaleLowerCase().includes(query)));
+  r.status.textContent=musicPendingLabels.get(i)||(ready?track.name:'Sin canción asignada');
+  r.status.classList.toggle('is-ready',ready&&!busy);
+  r.pick.textContent=busy?'Guardando…':(ready?'Cambiar audio':'Asignar audio');
+  r.pick.disabled=busy;r.remove.disabled=busy||!ready;
+ }
+}
 async function musicStatus(){try{const r=await fetch('/api/music/status',{cache:'no-store'});if(!r.ok)throw Error('Servidor');const payload=await r.json();musicTracks=payload.tracks||[];renderMusicInfo();$('music-status-dot').textContent='● Música lista para OBS';}catch(e){$('music-status-dot').textContent='○ No hay conexión con el servidor';}}
+$('music-filter').addEventListener('input',renderMusicInfo);
+$('music-only-queue').addEventListener('change',renderMusicInfo);
 $('music-enabled').addEventListener('click',()=>musicCommand('music_toggle'));
 $('music-play').addEventListener('click',()=>musicCommand('music_play'));
 $('music-stop').addEventListener('click',()=>musicCommand('music_stop'));
@@ -700,13 +777,32 @@ let saveTimer;
 function saveMusicSettings(){clearTimeout(saveTimer);const volume=Number($('music-volume').value),seconds=Number($('music-seconds').value);saveTimer=setTimeout(()=>musicCommand('music_settings',{volume,seconds}),250)}
 $('music-volume').addEventListener('input',()=>{$('volume-label').textContent=$('music-volume').value+'%';saveMusicSettings()});
 $('music-seconds').addEventListener('input',()=>{$('seconds-label').textContent=$('music-seconds').value+' s';saveMusicSettings()});
-$('upload-music').addEventListener('change',async e=>{
- const file=e.target.files?.[0];if(!file)return;const chapter=state.index;
- if(file.size>30*1024*1024){alert('Máximo 30 MB por canción.');e.target.value='';return;}
- const status=$('music-file-status');status.textContent='Subiendo '+file.name+'...';
- try{const r=await fetch('/api/music/upload?index='+chapter+'&name='+encodeURIComponent(file.name),{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:file});const j=await r.json();if(!r.ok)throw Error(j.error||'No se pudo cargar');await musicStatus();status.textContent='✓ Guardado para '+games[chapter][1]+'. Pulsa ▶ Reproducir capítulo para escucharlo.';}catch(err){alert('Error de audio: '+err.message);await musicStatus()}finally{e.target.value=''}
+musicTrackList.addEventListener('click',async e=>{
+ const pick=e.target.closest('button[data-music-pick]');
+ if(pick){const i=Number(pick.dataset.musicPick);if(!Number.isInteger(i)||!games[i]||musicBusyIndices.has(i))return;musicPickIndex=i;const input=$('upload-music');input.value='';input.click();return;}
+ const remove=e.target.closest('button[data-music-remove]');
+ if(!remove)return;
+ const i=Number(remove.dataset.musicRemove);
+ if(!Number.isInteger(i)||!games[i]||musicBusyIndices.has(i)||!musicTracks[i]?.ready)return;
+ if(!confirm('¿Quitar la canción de '+games[i][1]+'?'))return;
+ musicBusyIndices.add(i);musicPendingLabels.set(i,'Quitando canción…');renderMusicInfo();
+ try{const r=await fetch('/api/music/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({index:i})});const j=await r.json();if(!r.ok)throw Error(j.error||'No se pudo quitar');await musicStatus();showMusicFeedback('Canción eliminada de '+games[i][1]+'. El GTA en directo no ha cambiado.');}
+ catch(err){showMusicFeedback('No se pudo quitar la canción de '+games[i][1]+': '+err.message,true);await musicStatus()}
+ finally{musicBusyIndices.delete(i);musicPendingLabels.delete(i);renderMusicInfo()}
 });
-$('music-delete').addEventListener('click',async()=>{const i=state.index;if(!musicTracks[i]?.ready)return;if(!confirm('¿Quitar la canción de '+games[i][1]+'?'))return;try{const r=await fetch('/api/music/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({index:i})});if(!r.ok)throw Error('No se pudo quitar');await musicStatus()}catch(err){alert(err.message)}});
+$('upload-music').addEventListener('change',async e=>{
+ const file=e.target.files?.[0],i=musicPickIndex;musicPickIndex=null;e.target.value='';
+ if(!file||!Number.isInteger(i)||!games[i])return;
+ if(file.size>30*1024*1024){showMusicFeedback('La canción de '+games[i][1]+' supera el máximo de 30 MB.',true);return;}
+ if(musicBusyIndices.has(i))return;
+ musicBusyIndices.add(i);musicPendingLabels.set(i,'Subiendo '+file.name+'…');renderMusicInfo();
+ try{
+  const r=await fetch('/api/music/upload?index='+i+'&name='+encodeURIComponent(file.name),{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:file});
+  const j=await r.json();if(!r.ok)throw Error(j.error||'No se pudo cargar el audio');
+  await musicStatus();showMusicFeedback('Audio asignado a '+games[i][1]+': '+file.name+'. El GTA en directo no ha cambiado.');
+ }catch(err){showMusicFeedback('No se pudo cargar la canción de '+games[i][1]+': '+err.message,true);await musicStatus()}
+ finally{musicBusyIndices.delete(i);musicPendingLabels.delete(i);renderMusicInfo()}
+});
 
 render(state);poll();logoStatus();musicStatus();setInterval(poll,550);setInterval(logoStatus,2500);setInterval(musicStatus,4500);
 </script>
@@ -726,7 +822,7 @@ render(state);poll();logoStatus();musicStatus();setInterval(poll,550);setInterva
   const [id,label,icon]=tabs[i],button=document.createElement('button');button.type='button';button.className='nav-link';button.dataset.view=id;button.setAttribute('aria-controls','view-'+id);button.setAttribute('aria-selected','false');button.innerHTML='<span class="nav-icon">'+icon+'</span>'+label;
   button.addEventListener('click',()=>navigate(id));sidebar.append(button);navButtons.push(button);
  }
- const sidebarEnd=document.createElement('div');sidebarEnd.className='sidebar-bottom';sidebarEnd.innerHTML='<strong>ItsOcho Studio v5.14</strong><div id="side-now">19 capítulos disponibles</div><div>Local · OBS:8767</div>';sidebar.append(sidebarEnd);
+ const sidebarEnd=document.createElement('div');sidebarEnd.className='sidebar-bottom';sidebarEnd.innerHTML='<strong>ItsOcho Studio v5.15</strong><div id="side-now">19 capítulos disponibles</div><div>Local · OBS:8767</div>';sidebar.append(sidebarEnd);
  const views={};
  for(const [id,title] of tabs){const wrapper=document.createElement('section');wrapper.id='view-'+id;wrapper.className='studio-view';wrapper.hidden=true;
    const h=document.createElement('div');h.className='view-heading';h.innerHTML='<div><h2>'+title+'</h2><p>'+({direct:'Todo lo que necesitas mientras estás en directo.',queue:'Activa, ordena y presenta solo los capítulos que quieras.',music:'Asigna y controla la banda sonora de cada GTA.',captures:'Conecta tus fuentes y ajusta los marcos de cámara y PS5.',brand:'Cambia títulos, logos y la identidad de la transmisión.',deck:'Asigna botones de Stream Deck sin plugins adicionales.',help:'Enlaces, instalación y notas para OBS.'}[id])+'</p></div>';
