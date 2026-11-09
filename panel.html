@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ItsOcho · Timeline v5.13 · Control Studio</title>
+<style>
+:root{--bg:#0d1020;--card:#151b30;--card2:#1b2339;--line:#313b55;--muted:#a9b4cf;--pink:#f77aac;--cyan:#60dfe8;--white:#f9f9ff;--gold:#ffca75}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 10% 0%,#32224b 0%,transparent 38%),radial-gradient(ellipse at 100% 0%,#103b4b 0%,transparent 30%),var(--bg);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--white)}
+main{max-width:1060px;margin:auto;padding:24px 25px 70px}
+header{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+.brand{display:flex;align-items:center;gap:14px}.mark{width:55px;height:55px;background:linear-gradient(140deg,#ff78b4,#7b69ee 55%,#3bcac8);border-radius:16px;display:grid;place-items:center;font-size:35px;font-weight:1000;font-style:italic;transform:rotate(-7deg);box-shadow:0 9px 30px #0008}.brand small{display:block;color:var(--gold);font-size:11px;font-weight:900;letter-spacing:3px}.brand h1{font-size:25px;margin:4px 0 0;letter-spacing:.2px}
+.status{font-size:13px;color:#bad5d7;display:flex;align-items:center;gap:8px;padding:10px 13px;border:1px solid #ffffff18;border-radius:100px;background:#0b102099}.dot{background:#49dbc7;width:8px;height:8px;border-radius:50%;box-shadow:0 0 13px #49dbc7}.offline .dot{background:#ec6a75;box-shadow:0 0 8px #ec6a75}
+.hero{padding:27px;border:1px solid #6575a944;border-radius:23px;background:linear-gradient(125deg,#252144,#141d30 63%,#142834);box-shadow:0 20px 60px #0006;position:relative;overflow:hidden}.hero:before{content:"";position:absolute;right:-80px;top:-100px;width:300px;height:300px;border:1px solid #ffffff10;border-radius:50%;box-shadow:0 0 0 45px #ffffff07,0 0 0 100px #ffffff05}.eyebrow{color:var(--cyan);font-size:12px;font-weight:900;letter-spacing:3px;text-transform:uppercase}.year{color:var(--gold);font-size:20px;font-weight:900}.currently{font-size:clamp(28px,5vw,49px);font-weight:1000;letter-spacing:-1px;margin:12px 0 10px;max-width:900px;position:relative}.note{color:#cbd3e7;font-size:17px;max-width:800px;min-height:24px}.progress{height:6px;margin-top:24px;border-radius:100px;background:#ffffff20;overflow:hidden}.progress-fill{height:100%;width:0%;transition:width .35s ease;background:linear-gradient(90deg,var(--cyan),#c27bf8,var(--pink))}.step{display:flex;justify-content:space-between;margin-top:13px;font-size:12px;color:#bdc6e0;letter-spacing:1.6px;font-weight:800}
+.controls{display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:15px;margin:20px 0}.btn{color:white;background:#1a2440;border:1px solid #5969886b;border-radius:14px;min-height:66px;font-size:17px;font-weight:900;cursor:pointer;transition:transform .12s,background .12s;touch-action:manipulation}.btn:hover{background:#2b3d5d}.btn:active{transform:scale(.97)}.btn.primary{background:linear-gradient(125deg,#f66caa,#855dda);border-color:#ffffff38;box-shadow:0 6px 28px #b7478e48}.btn.primary:hover{filter:brightness(1.12)}.btn:disabled{opacity:.3;cursor:not-allowed}
+.hud-control{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 18px;margin:-2px 0 20px;border:1px solid #4b607b;background:linear-gradient(105deg,#192b42,#25213b);border-radius:15px}.hud-control strong{font-size:14px}.hud-control p{font-size:12px;line-height:1.55;color:#adbed4;margin:6px 0 0}.hud-toggle{border-radius:11px;min-width:220px;min-height:49px;padding:11px 16px;font-size:14px;font-weight:900;cursor:pointer;flex-shrink:0;border:1px solid #fc92bc;background:linear-gradient(120deg,#9c326a,#533c85);color:#fff;box-shadow:0 5px 24px #ed6dab1c;transition:background .2s,transform .12s,box-shadow .2s}.hud-toggle:hover{filter:brightness(1.16)}.hud-toggle:active{transform:scale(.97)}.hud-toggle.hud-is-hidden{background:linear-gradient(120deg,#096a7b,#164c76);border-color:#4aebef;box-shadow:0 5px 24px #45dfea1b}.hud-state{display:inline-flex;align-items:center;gap:6px;margin-left:6px;color:#9ef2e9;font-weight:800}.hud-state.is-hidden{color:#ffb8d2}@media(max-width:620px){.hud-control{flex-direction:column;align-items:stretch}.hud-toggle{width:100%}}
+.actions{display:flex;gap:11px;flex-wrap:wrap;align-items:center;margin-bottom:26px}.mini{border:1px solid #485574;background:#161c30;color:#e1e9fb;border-radius:10px;padding:13px 17px;cursor:pointer;font-size:13px;font-weight:850}.mini:hover{background:#263552}.mini.active{background:#12444c;border-color:#347f83;color:#a3f6eb}.select-wrap{margin-left:auto;min-width:min(100%,275px)}select{width:100%;border:1px solid #586788;background:#161d33;color:#fff;border-radius:10px;padding:12px;font-size:14px;cursor:pointer}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:23px 0 13px;flex-wrap:wrap}.bar h2{font-size:17px;margin:0}.bar span{font-size:12px;color:#a2aec7}
+.chapters{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}.item{min-height:75px;text-align:left;background:#131b30;border:1px solid #2e3a53;border-radius:13px;padding:14px 13px;color:#f4f5ff;cursor:pointer;transition:background .14s,transform .14s,border-color .14s}.item:hover{transform:translateY(-2px);background:#242c4b}.item.active{border-color:#f9acd1;background:linear-gradient(115deg,#5c2853,#2b3151)}.item .date{display:block;color:#ffcb83;font-size:11px;font-weight:900;letter-spacing:1px}.item .name{display:block;margin-top:6px;font-size:13px;font-weight:800;line-height:1.25}
+.logos-tools{display:flex;gap:11px;align-items:center;flex-wrap:wrap;margin:12px 0 26px;padding:14px 16px;border-radius:12px;background:#121c30;border:1px solid #33445b}
+.logo-status{flex:1;font-size:12px;color:#bbd8ee;line-height:1.5;min-width:220px}
+.logo-status b{color:#9be9d9}
+.logo-upload{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.logo-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.hint{background:#131c30a9;border:1px solid #ffffff15;padding:15px 18px;border-radius:12px;color:#bdc8df;font-size:13px;line-height:1.65;margin-top:27px}.hint code{color:#fff;background:#2a3450;border-radius:4px;padding:2px 5px;word-break:break-all}.warn{color:#ffc7ce;display:none}.offline .warn{display:block}
+@media(max-width:580px){main{padding:16px 13px 50px}.hero{padding:21px}.controls{grid-template-columns:1fr 1fr}.controls .primary{grid-column:1/-1;grid-row:1}.actions .select-wrap{margin-left:0;width:100%}.btn{min-height:65px}.brand h1{font-size:20px}}
+
+.music-card{border:1px solid #4e4d75;border-radius:20px;background:linear-gradient(135deg,#221b38,#132639 90%);padding:22px;margin:20px 0 26px;box-shadow:0 16px 40px #0004}
+.music-top{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}
+.music-kicker{font-size:11px;letter-spacing:3px;color:#ffb6de;font-weight:900}.music-top h2{margin:8px 0;font-size:23px}.music-top p{color:#bac5df;margin:6px 0 0;line-height:1.6;font-size:13px;max-width:690px}
+.music-connection{font-size:12px;border-radius:30px;border:1px solid #427d83;padding:10px 12px;color:#9bfbf1;background:#073c4244}
+.music-actions{display:flex;gap:9px;margin:18px 0;flex-wrap:wrap}.music-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:19px 0}.music-row label{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;background:#10192b88;padding:15px;border-radius:12px;color:#c7d2e8;font-size:13px}.music-row strong{color:#fff}
+.music-row input[type=range]{width:100%;accent-color:#ff83b6;cursor:pointer}
+.music-file-card{padding:17px;border:1px solid #4a4965;border-radius:14px;background:#0b1325a8}.music-title{display:flex;justify-content:space-between;align-items:start;gap:15px}.music-title small{letter-spacing:2px;color:#a8e8ef;font-size:10px;font-weight:900}.music-title h3{margin:7px 0;font-size:19px}.music-title p{margin:0;color:#bbc8e0;overflow-wrap:anywhere}.music-pill{background:#283251;padding:8px 11px;border-radius:30px;font-size:12px;color:#dbe9ff}
+.music-upload{position:relative;overflow:hidden;display:flex;align-items:center;cursor:pointer}.music-upload input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.music-help{font-size:12px;line-height:1.7;color:#b9c7e2;margin:8px 0}.music-setup{margin:18px 0 0}.music-setup code{color:#b4f4f0;font-size:12px;overflow-wrap:anywhere}.music-setup b{color:#fff}
+@media(max-width:620px){.music-row{grid-template-columns:1fr}.music-card{padding:15px}}
+
+/* Cinematic chapter transitions — OBS stays unaffected by this panel layout. */
+.cine-card{border:1px solid #b16a9959;background:linear-gradient(120deg,#241b37,#132c3c);border-radius:18px;padding:20px;margin:12px 0 23px;box-shadow:0 8px 40px #0003}
+.cine-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.cine-head strong{font-size:17px}.cine-head p{font-size:13px;color:#c4d1df;line-height:1.6;margin:5px 0 0}.cine-status{font-size:12px;border:1px solid #88bbdb70;padding:8px 12px;background:#14273a;color:#aff2ec;border-radius:12px}
+.cine-buttons{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.cine-buttons .mini{flex:1;min-width:140px}.cine-buttons .mini.main{background:#75365f;border:1px solid #e189b8;color:white}
+.cine-buttons .mini:disabled{opacity:.45;cursor:not-allowed}
+
+
+/* Sync de cámara con OBS Studio (WebSocket 5.x). Password stays in memory. */
+.obs-card{margin:-8px 0 24px;padding:18px;border-radius:16px;border:1px solid #496b80;background:linear-gradient(115deg,#152438,#222038)}
+.obs-head{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.obs-head h2{font-size:17px;margin:0}.obs-status{font-size:12px;color:#ffd1dc;border:1px solid #8e6575;padding:7px 10px;border-radius:20px}.obs-status.connected{color:#a8f6e4;border-color:#3a948a;background:#16434444}
+.obs-fields{display:grid;grid-template-columns:110px minmax(160px,1fr) auto;gap:10px;align-items:end;margin-top:15px}.obs-fields label,.obs-source-row label{display:flex;flex-direction:column;gap:7px;color:#c6d2e6;font-size:12px;font-weight:800}
+.obs-fields input{width:100%;background:#10182b;color:#fff;border:1px solid #536782;border-radius:9px;padding:11px 12px;min-height:42px}.obs-fields button,.obs-source-row button{min-height:42px}
+.obs-source-row{display:grid;grid-template-columns:minmax(150px,1fr) auto;gap:10px;margin-top:13px;align-items:end}.obs-source-row select{min-height:42px}.obs-help{font-size:12px;color:#b2bed9;line-height:1.6;margin:13px 0 0}.obs-help strong{color:#f2f5ff}.obs-feedback{font-size:12px;min-height:18px;color:#a9f4de;margin-top:10px;overflow-wrap:anywhere}.obs-feedback.error{color:#ffa8b5}
+.obs-checkbox{display:flex;align-items:center;gap:9px;margin-top:12px;font-size:12px;color:#d9e5fa;cursor:pointer}.obs-checkbox input{accent-color:#64dfe9}
+@media(max-width:680px){.obs-fields{grid-template-columns:90px 1fr}.obs-fields button{grid-column:1/-1}.obs-source-row{grid-template-columns:1fr}.obs-source-row button{width:100%}}
+/* PS5 separate capture frame control. */
+.ps5-card{border:1px solid #486d88;background:linear-gradient(115deg,#14283c,#272039);border-radius:16px;
+ padding:18px;margin:0 0 22px}.ps5-top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.ps5-top h2{margin:0;font-size:18px}.ps5-top p{color:#b7c9df;font-size:12px;line-height:1.6;margin:7px 0 0;max-width:570px}
+.ps5-settings{display:grid;grid-template-columns:1.2fr repeat(3,minmax(95px,.7fr));gap:10px;margin-top:15px}
+.ps5-settings label{font-size:12px;color:#cdd9ed;display:flex;flex-direction:column;gap:6px;font-weight:800}
+.ps5-settings select,.ps5-settings input{width:100%;min-height:42px;border:1px solid #556d88;border-radius:9px;background:#101a2d;color:white;padding:9px}
+.ps5-source{display:grid;grid-template-columns:minmax(180px,1fr) auto;gap:10px;align-items:end;margin-top:14px}
+.ps5-source label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:800;color:#d1dff3}
+.ps5-source select{min-height:42px}.ps5-feedback{margin-top:10px;min-height:19px;color:#9cebd7;font-size:12px;line-height:1.6}
+.ps5-feedback.error{color:#ffadb6}.ps5-toggle{border-color:#54cddd!important}.ps5-toggle.active{border-color:#ff69b1!important}
+@media(max-width:780px){.ps5-settings{grid-template-columns:repeat(2,minmax(0,1fr))}.ps5-source{grid-template-columns:1fr}}
+/* v5.12 — live queue configurator, independent from OBS captures. */
+.config-card{margin:18px 0 22px;border:1px solid #536480;background:linear-gradient(125deg,#1c243c,#142938);border-radius:18px;padding:20px}
+.config-card h2{font-size:18px;margin:0 0 7px}.config-lead{font-size:13px;color:#b6c7e0;line-height:1.6;margin:0 0 13px}
+.config-summary{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:11px}
+.queue-counter{border:1px solid #508888;border-radius:99px;padding:8px 12px;color:#99f3ed;background:#13434d78;font-size:13px;font-weight:800}
+.queue-preview{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0 15px;max-height:114px;overflow:auto}
+.queue-chip{padding:5px 9px;border-radius:7px;background:#303c55;border:1px solid #ffffff17;font-size:11px;color:#d9e7f9}
+.queue-chip.live{background:#593255;border-color:#ed9ec8;color:white}
+.queue-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:9px;margin:14px 0}
+.queue-item{border-radius:11px;border:1px solid #35485f;background:#101a2dc5;padding:12px;display:flex;flex-direction:column;gap:9px}
+.queue-item.disabled-game{opacity:.57}.queue-item.current-game{border-color:#ff99c6;background:#2c2643}
+.queue-name{font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px;cursor:pointer}
+.queue-name small{color:#b4c4de;font-size:11px}
+.queue-options{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-left:21px}
+.queue-options label,.config-toggle{font-size:12px;color:#ccdbeb;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.config-card input[type=checkbox]{accent-color:#fd83bd;width:16px;height:16px;cursor:pointer}
+.config-tools{display:flex;gap:8px;flex-wrap:wrap;margin:11px 0}
+.config-note{font-size:12px;color:#8eeae0;min-height:20px}
+.config-card details{border-top:1px solid #ffffff1f;margin-top:10px;padding-top:13px}
+.config-card summary{font-weight:900;cursor:pointer;font-size:13px;color:#e7e8ff}
+.brand-settings{margin-top:15px;display:grid;grid-template-columns:1fr 1.5fr;gap:12px}
+.brand-settings label{font-size:12px;color:#d6e2ef;font-weight:750;display:block}
+.brand-settings input[type=text]{width:100%;margin-top:7px;padding:12px 13px;background:#10182c;border:1px solid #52647c;border-radius:9px;color:#fff;font-size:14px;outline-offset:3px}
+.brand-switches{display:flex;flex-wrap:wrap;gap:16px;margin-top:15px}
+.item.disabled-game{opacity:.36;cursor:not-allowed}.item.disabled-game:hover{transform:none;background:#131b30}
+.config-card .mini{padding:9px 12px}
+@media(max-width:670px){.brand-settings{grid-template-columns:1fr}.config-card{padding:14px}}
+
+/* v5.13: responsive studio navigation. Existing controls keep their IDs/handlers. */
+:root{--nav-width:240px}
+body{background:#0b101e}
+#studio-shell{display:grid;grid-template-columns:var(--nav-width) minmax(0,1fr);min-height:100vh}
+#studio-sidebar{position:sticky;top:0;height:100vh;overflow:auto;background:linear-gradient(180deg,#101729,#0c1222);border-right:1px solid #2c3950;padding:22px 12px;display:flex;flex-direction:column;gap:6px;z-index:15}
+.studio-brand{display:flex;gap:10px;align-items:center;margin:3px 8px 25px;font-size:16px;font-weight:950}.studio-brand i{display:grid;place-items:center;width:37px;height:37px;background:linear-gradient(145deg,#ff65ab,#5edee4);border-radius:12px;font-style:italic;font-size:23px;color:#0e1323}
+.studio-brand small{display:block;color:#9daed0;font-size:11px;font-weight:550;margin-top:3px}
+.nav-group-label{margin:12px 11px 6px;font-size:10px;letter-spacing:2px;color:#7e91b0;font-weight:800;text-transform:uppercase}
+.nav-link{width:100%;border:1px solid transparent;background:transparent;text-align:left;color:#becbe2;font:750 13px Inter,Segoe UI,Arial,sans-serif;padding:13px 13px;border-radius:11px;cursor:pointer;display:flex;align-items:center;gap:11px;transition:background .16s,color .16s}
+.nav-link:hover{background:#243048;color:white}.nav-link[aria-selected=true]{color:#fff;background:linear-gradient(100deg,#443451,#1b3547);border-color:#7a5b7d88;box-shadow:inset 3px 0 #f07db2}
+.nav-link .nav-icon{font-size:17px;width:23px;text-align:center}
+.sidebar-bottom{margin-top:auto;padding:17px 11px 6px;color:#9db4cf;font-size:12px;line-height:1.8;border-top:1px solid #ffffff17}
+#studio-main{width:100%;max-width:none;min-width:0;padding:28px clamp(18px,3vw,45px) 60px;margin:0}
+#studio-main>header{margin-bottom:19px}.studio-view{max-width:1220px;animation:panelEnter .18s ease-out}.studio-view[hidden]{display:none!important}
+@keyframes panelEnter{from{opacity:.6;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.view-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:5px 0 21px;flex-wrap:wrap}.view-heading h2{font-size:22px;margin:0;letter-spacing:-.3px}.view-heading p{color:#a5b4cd;font-size:13px;line-height:1.5;margin:5px 0 0}.view-heading .view-tag{font-size:11px;color:#a1eee8;padding:8px 11px;border:1px solid #41747e;border-radius:20px}
+#view-direct .hero{padding:20px 25px}#view-direct .currently{font-size:clamp(25px,3vw,40px);margin:8px 0}#view-direct .controls{margin:16px 0 13px}#view-direct .hud-control{margin:8px 0 13px}#view-direct .actions{margin-bottom:8px}
+#view-direct .cine-card{margin:12px 0 15px}#view-direct .hero:before{pointer-events:none}
+#view-queue .config-card,#view-brand .config-card{margin:0 0 22px}
+#view-queue #queue-editor{display:block}#view-queue .queue-grid{max-height:55vh;overflow-y:auto;padding-right:6px}#view-queue #queue-editor>summary{padding:13px 0}
+#view-brand .logos-tools{margin-top:21px}
+#view-music .music-card,#view-captures .obs-card,#view-captures .ps5-card{margin:0 0 22px}
+#view-help .hint{margin:0 0 15px}
+.deck-intro{border:1px solid #47596b;background:linear-gradient(125deg,#20243f,#112d3c);padding:19px 21px;border-radius:15px;margin-bottom:20px;font-size:13px;color:#d3ddeb;line-height:1.7}
+.deck-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:11px}
+.deck-item{padding:13px 15px;border:1px solid #374d69;border-radius:13px;background:#151e32;display:flex;flex-direction:column;gap:9px}
+.deck-item strong{font-size:14px}.deck-url{font:11px ui-monospace,SFMono-Regular,Consolas,monospace;color:#abc2d9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.deck-actions{display:flex;gap:9px}.deck-actions button{min-height:36px;padding:7px 12px;flex:1}.deck-note{font-size:12px;line-height:1.6;color:#aabbd7;margin:12px 0}
+.deck-status{min-height:22px;color:#8debdc;font-size:12px;margin:12px 0}
+.dashboard-mini{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 20px}.dashboard-mini>div{font-size:12px;border:1px solid #334b62;border-radius:10px;background:#141c32;padding:9px 12px;color:#afc7e2}.dashboard-mini strong{color:#fff}
+#queue-filter{width:min(100%,430px);background:#10192d;border:1px solid #52607b;color:#fff;border-radius:10px;padding:12px 15px;margin:6px 0 15px;font-size:14px}
+.queue-item.filter-hidden{display:none}
+@media(max-width:950px){:root{--nav-width:202px}#studio-main{padding:23px 22px}#studio-sidebar{padding:16px 9px}}
+@media(max-width:680px){#studio-shell{display:block}#studio-sidebar{position:sticky;height:auto;top:0;display:flex;flex-direction:row;align-items:center;overflow-x:auto;overflow-y:hidden;padding:8px;gap:5px;box-shadow:0 8px 20px #0008}#studio-sidebar .studio-brand,#studio-sidebar .nav-group-label,#studio-sidebar .sidebar-bottom{display:none}.nav-link{width:auto;min-width:max-content;padding:11px 12px;flex-shrink:0;font-size:12px}.nav-link .nav-icon{display:none}#studio-main{padding:15px 12px 40px}#studio-main>header{display:none}.view-heading h2{font-size:19px}.deck-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.studio-view{animation:none}.nav-link{transition:none}}
+
+
+/* v5.14 · Drag-and-drop preview for the real camera frame (16:9 scene; webcam 4:3). */
+.cam-layout{border:1px solid #4b637e;border-radius:14px;background:#111d31a8;padding:16px;margin-top:16px}
+.cam-layout h3{margin:0 0 5px;font-size:15px}.cam-layout p{font-size:12px;color:#c1d2e7;line-height:1.6;margin:6px 0 12px}
+.cam-layout-fields{display:grid;grid-template-columns:minmax(160px,1.3fr) repeat(3,minmax(70px,.75fr));gap:10px}
+.cam-layout-fields label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:750;color:#c7d7ec}
+.cam-layout-fields input,.cam-layout-fields select{width:100%;background:#0d172a;color:white;border:1px solid #536c87;border-radius:9px;padding:10px;min-height:40px}
+.cam-scene{position:relative;width:100%;aspect-ratio:16/9;border:1px solid #4c6b84;border-radius:12px;overflow:hidden;touch-action:none;user-select:none;cursor:crosshair;background:repeating-linear-gradient(0deg,transparent 0,transparent calc(25% - 1px),#ffffff11 25%),repeating-linear-gradient(90deg,transparent 0,transparent calc(25% - 1px),#ffffff11 25%),linear-gradient(130deg,#1c2946,#13223b 62%,#251b36);}
+.cam-scene-label{position:absolute;top:8px;left:10px;color:#9eb7d2;font-size:11px;pointer-events:none}
+.cam-ghost-ps5{position:absolute;border:1px dashed #bb8ecb77;background:#e78fd612;color:#c8a9c2;font-size:10px;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.cam-drag-box{position:absolute;left:0;top:0;border:2px solid #ff80bd;border-radius:7px;box-shadow:0 0 0 1px #75faff9c,inset 0 0 15px #ff5aaa22,0 0 14px #ff5aaa44;background:#17263b33;display:flex;align-items:center;justify-content:center;text-align:center;color:white;font-weight:900;font-size:12px;cursor:grab;touch-action:none;}
+.cam-drag-box:active{cursor:grabbing}.cam-drag-box:focus-visible{outline:3px solid #4be4f8;outline-offset:3px}
+.cam-layout-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}.cam-layout-actions button{flex:0 0 auto}
+.cam-layout #cam-layout-feedback{font-size:12px;color:#a4f5de;margin:9px 0 0;min-height:17px}.cam-layout #cam-layout-feedback.error{color:#ffb9ca}
+@media(max-width:800px){.cam-layout-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.cam-layout-actions button{width:100%}}
+</style></head>
+<body><main>
+<header><div class="brand"><div class="mark">O</div><div><small id="panel-brand-name">ITSOCHO</small><h1 id="panel-brand-subtitle">THE ROAD TO GTA VI</h1></div></div><div id="status" class="status"><span class="dot"></span><span id="statusText">Conectando con el panel...</span></div></header>
+<section class="hero" aria-live="polite"><div class="eyebrow">CAPÍTULO EN PANTALLA &nbsp;·&nbsp; <span id="count">01 / 19</span></div><div style="margin-top:18px" class="year" id="year">1997</div><div id="title" class="currently">Grand Theft Auto</div><div id="note" class="note">El comienzo de la saga.</div><div class="progress"><div class="progress-fill" id="fill"></div></div><div class="step"><span id="queue-start">1997 · INICIO</span><span id="queue-end">2026 · GTA VI</span></div></section>
+<section class="controls"><button id="prev" class="btn" data-action="prev">← Anterior</button><button id="next" class="btn primary" data-action="next">Siguiente →</button><button id="last" class="btn" data-action="last">Ir a GTA VI ⏭</button></section>
+<section class="config-card" aria-label="Configuración del directo y selección de GTA">
+  <div class="config-summary"><div><h2>🎮 Cola del directo y títulos</h2><p class="config-lead">Activa los GTA que quieres presentar. La cola, los puntos, el contador y Siguiente se actualizan en OBS al instante.</p></div>
+    <span id="queue-counter" class="queue-counter">19 / 19 GTA activos</span></div>
+  <div id="queue-preview" class="queue-preview" aria-live="polite"></div>
+  <details id="queue-editor"><summary>Editar juegos y elementos por capítulo</summary>
+   <div class="config-tools"><button class="mini" id="queue-all" type="button">✓ Todos</button><button class="mini" id="queue-main" type="button">★ Solo saga principal</button></div>
+   <div id="queue-grid" class="queue-grid"></div>
+   <div id="queue-feedback" class="config-note" role="status">Los cambios se guardan automáticamente. Debe quedar al menos un juego activo.</div>
+  </details>
+  <details id="brand-editor"><summary>Personalizar encabezado y visibilidad general</summary>
+   <div class="brand-settings"><label>Nombre del canal<input type="text" id="brand-name-input" maxlength="48" value="ITSOCHO" placeholder="Nombre del canal"></label>
+   <label>Nombre del especial<input type="text" id="brand-subtitle-input" maxlength="64" value="THE ROAD TO GTA VI" placeholder="Nombre del especial"></label></div>
+   <div class="brand-switches">
+     <label class="config-toggle"><input type="checkbox" id="show-brand-mark" checked> O con corona</label>
+     <label class="config-toggle"><input type="checkbox" id="show-brand-name" checked> Nombre del canal</label>
+     <label class="config-toggle"><input type="checkbox" id="show-brand-subtitle" checked> Nombre del especial</label>
+     <label class="config-toggle"><input type="checkbox" id="show-title-global" checked> Títulos de los GTA</label>
+     <label class="config-toggle"><input type="checkbox" id="show-logo-global" checked> Logos de los GTA</label>
+   </div>
+   <div class="config-tools"><button type="button" class="mini active" id="brand-save">✓ Guardar textos</button><button type="button" class="mini" id="brand-reset">Restaurar nombres originales</button></div>
+   <div id="brand-feedback" class="config-note" role="status">Modifica el texto y pulsa Guardar. Los cambios aparecerán en OBS.</div>
+  </details>
+</section>
+<section class="cine-card" aria-label="Transiciones cinematográficas">
+ <div class="cine-head"><div><strong>✦ Presentación cinematográfica por GTA</strong><p>HUD por piezas → compuertas → logo al ritmo de la música → reapertura. Se controla desde este mismo panel.</p></div><span id="cine-status" class="cine-status">● Preparando...</span></div>
+ <div class="cine-buttons"><button class="mini main" id="cine-replay" type="button" data-action="cinematic_replay">▶ Presentar juego actual</button><button class="mini main" id="cine-next" type="button" data-action="next">⏭ Transición al siguiente GTA</button><button class="mini" id="cine-skip" type="button" data-action="cinematic_skip">⏩ Saltar animación</button><button class="mini active" id="cine-toggle" type="button" data-action="cinematic_toggle">✨ Transiciones: activadas</button></div>
+</section>
+<section class="hud-control" aria-label="Control general de HUD"><div><strong>Visibilidad del HUD <span id="hud-state" class="hud-state">● Visible en OBS</span></strong><p>Oculta o muestra en OBS la cronología, el logo, el marco de cámara y la línea del tiempo con un solo clic. La música sigue sonando.</p></div><button id="hud-toggle" class="hud-toggle" type="button" data-action="hud_toggle" aria-pressed="false">◉ Ocultar HUD</button></section>
+<section class="obs-card" aria-label="Sincronización de cámara con OBS">
+ <div class="obs-head"><h2>📹 Cámara y OBS Studio</h2><span id="obs-status" class="obs-status">○ OBS no conectado · Solo marco</span></div>
+ <div class="obs-fields">
+  <label>Puerto WebSocket<input id="obs-port" type="number" min="1" max="65535" value="4455" inputmode="numeric" autocomplete="off"></label>
+  <label>Contraseña de OBS<input id="obs-password" type="password" placeholder="Contraseña de OBS WebSocket" autocomplete="off"></label>
+  <button id="obs-connect" class="mini" type="button">Conectar a OBS</button>
+ </div>
+ <div class="obs-source-row">
+  <label>Fuente real de tu cámara en OBS<select id="obs-source" disabled><option value="">Conecta OBS para ver las fuentes...</option></select></label>
+  <button id="obs-refresh" type="button" class="mini" disabled>⟳ Actualizar fuentes</button>
+ </div>
+ <label class="obs-checkbox"><input type="checkbox" id="obs-sync-enable" checked> Al pulsar «Cámara», cambiar también su visibilidad en OBS (en todas las escenas donde aparece)</label>
+
+ <section class="cam-layout" aria-label="Ubicación de la cámara">
+  <h3>Posición de cámara · 4:3</h3>
+  <p>Arrastra el marco rosa en esta vista previa para moverlo. Al soltar se guardará en el overlay; también puedes usar una esquina o introducir X/Y y el ancho.</p>
+  <div class="cam-scene" id="cam-scene" aria-label="Vista previa interactiva del lienzo 1920 por 1080">
+   <span class="cam-scene-label">OBS · 1920×1080</span><div class="cam-ghost-ps5" id="cam-ps5-ghost">PS5</div>
+   <div class="cam-drag-box" id="cam-drag-box" tabindex="0" role="slider" aria-label="Mover cámara; flechas para desplazar" aria-valuemin="0" aria-valuemax="1920" aria-valuenow="1588">CÁMARA 4:3</div>
+  </div>
+  <div class="cam-layout-fields">
+   <label>Ubicación<select id="cam-preset"><option value="bottom-right">Abajo derecha</option><option value="bottom-left">Abajo izquierda</option><option value="top-right">Arriba derecha</option><option value="top-left">Arriba izquierda</option><option value="center">Centro</option><option value="custom">Personalizada</option></select></label>
+   <label>X (px)<input id="cam-x" type="number" min="0" max="1740" step="1" value="1588"></label>
+   <label>Y (px)<input id="cam-y" type="number" min="0" max="945" step="1" value="799"></label>
+   <label>Ancho (px)<input id="cam-width" type="number" min="180" max="700" step="10" value="280"></label>
+  </div>
+  <div class="cam-layout-actions"><button id="cam-save-layout" class="mini active" type="button">Guardar posición</button>
+   <label class="obs-checkbox"><input id="cam-follow-obs" type="checkbox"> Mover también la fuente vinculada en OBS (ajustar a 4:3)</label></div>
+  <p id="cam-layout-feedback" role="status">El marco se puede mover sin conectar OBS. Para mover la webcam real, conecta OBS y activa la casilla.</p>
+ </section>
+ <div id="obs-feedback" class="obs-feedback">Configúralo una vez. Si no conectas OBS, el botón Cámara seguirá controlando solamente el marco.</div>
+ <p class="obs-help">En <strong>OBS → Herramientas → Ajustes del servidor WebSocket</strong>, activa el servidor, confirma el puerto (normalmente 4455) y copia la contraseña. <strong>No se guarda tu contraseña</strong>; hay que reconectar al recargar esta página. La fuente de cámara debe existir en alguna escena o grupo.</p>
+</section>
+<section class="ps5-card" aria-label="Marco de descarga PS5">
+ <div class="ps5-top"><div><h2>🎮 PS5 — Descarga en directo (16:9)</h2>
+  <p>Marco neón independiente. Pon tu captura de PS5 debajo del overlay en OBS y enciéndela cuando quieras mostrar el progreso de descarga.</p></div>
+  <button class="mini ps5-toggle" type="button" id="ps5-toggle">▣ Mostrar PS5</button></div>
+ <div class="ps5-settings">
+  <label>Posición rápida<select id="ps5-preset"><option value="top-right">Arriba derecha</option><option value="top-left">Arriba izquierda</option><option value="bottom-left">Abajo izquierda</option><option value="bottom-right">Abajo derecha</option><option value="custom">Personalizada</option></select></label>
+  <label>X (px)<input type="number" min="0" max="1600" step="1" id="ps5-x" value="1345"></label>
+  <label>Y (px)<input type="number" min="0" max="900" step="1" id="ps5-y" value="130"></label>
+  <label>Ancho (px)<input type="number" min="320" max="850" step="10" id="ps5-width" value="520"></label>
+ </div>
+ <div class="ps5-source"><label>Fuente real de PS5 en OBS (opcional)<select id="ps5-obs-source" disabled><option value="">Conecta OBS arriba y actualiza fuentes...</option></select></label>
+  <button id="ps5-save-layout" class="mini" type="button">✓ Guardar posición y tamaño</button></div>
+ <label class="obs-checkbox"><input id="ps5-obs-sync" type="checkbox" checked> Mostrar/ocultar también esa fuente de OBS al pulsar el botón PS5</label>
+ <p class="obs-help">Si vinculas tu captura, el botón controlará tanto su visibilidad en OBS como este marco. La captura debe estar <strong>debajo del overlay</strong> en la lista de fuentes. El marco no genera ni descarga el video de PS5 por sí mismo. Para encajarlo, ajusta la posición de la captura al mismo rectángulo X/Y/ancho × 9/16.</p>
+ <div id="ps5-feedback" class="ps5-feedback">Marco oculto. Ajusta la posición y pulsa Mostrar PS5.</div>
+</section>
+<div class="actions"><button class="mini" data-action="first">↩ Empezar desde GTA 1</button><button id="cam" class="mini" data-action="camera">📹 Cámara: visible</button><button id="timeline" class="mini" data-action="timeline">◉ Línea del tiempo: visible</button><button id="cinema" class="mini" data-action="cinema">🎬 Modo tráiler: desactivado</button><button id="flash" class="mini" data-action="flash">✨ Mostrar descripción 6 s</button><button id="logos" class="mini" data-action="logos">🖼️ Logos: visibles</button><label class="select-wrap"><select id="jump"><option value="">Saltar a un juego...</option></select></label></div>
+<section class="logos-tools" aria-label="Logos oficiales">
+  <div class="logo-status" id="logo-status">Preparando los logos de los juegos...</div>
+  <button class="mini" id="retry-logos" type="button">↻ Descargar logos</button>
+  <label class="mini logo-upload" title="También puedes elegir tu propio PNG, JPG, WEBP o SVG para el juego actual">↑ Poner logo propio <input type="file" id="upload-logo" accept="image/png,image/jpeg,image/webp,image/svg+xml"></label>
+</section>
+
+<section class="music-card" aria-label="Banda sonora por juego">
+  <div class="music-top"><div><div class="music-kicker">♫ SOUNDTRACK CONTROL</div><h2>Música automática por capítulo</h2><p>Durante la presentación, el logo reacciona a los graves de la canción que asignes. La música se detiene antes de revelar el HUD. Sin canciones incluidas.</p></div><div id="music-status-dot" class="music-connection">Audio: comprobando...</div></div>
+  <div class="music-actions">
+    <button class="mini active" id="music-enabled" type="button">♫ Música: activada</button>
+    <button class="mini" id="music-play" type="button">▶ Reproducir capítulo</button>
+    <button class="mini" id="music-stop" type="button">■ Detener música</button>
+  </div>
+  <div class="music-row">
+    <label>Volumen <strong id="volume-label">55%</strong><input type="range" id="music-volume" min="0" max="100" step="1" value="55"></label>
+    <label>Máximo de segundos por presentación <strong id="seconds-label">20 s</strong><input type="range" id="music-seconds" min="3" max="120" step="1" value="20"></label>
+  </div>
+  <div class="music-file-card">
+    <div class="music-title"><div><small>CANCIÓN DEL CAPÍTULO ACTUAL</small><h3 id="music-game-name">Grand Theft Auto</h3><p id="music-file-status">Sin audio asignado</p></div><span id="music-counter" class="music-pill">0/19</span></div>
+    <div class="music-actions"><label class="mini music-upload">↑ Elegir audio de mi PC<input type="file" id="upload-music" accept=".mp3,.wav,.ogg,.m4a,.webm,.flac,audio/*"></label><button class="mini" id="music-delete" type="button">✕ Quitar canción</button></div>
+    <p class="music-help">Formato: MP3 recomendado (hasta 30 MB). El audio se guarda en <code>musica/</code>. Puedes asignar archivos distintos a los 19 capítulos.</p>
+  </div>
+  <div class="music-help music-setup"><b>Una sola vez en OBS:</b> añade una fuente <b>Navegador</b> llamada “ItsOcho Música GTA” con URL <code>http://127.0.0.1:8767/music</code>, tamaño 1×1 y activa <b>Controlar audio mediante OBS</b>. Deja esta fuente visible y silencia su monitorización para evitar doble sonido. <b>El logo usa esa fuente para detectar los bajos; si no llega señal, se mueve con un pulso visual de respaldo. No dupliques la fuente de audio.</b></div>
+</section>
+<div class="bar"><h2>Elegir capítulo directamente</h2><span>Los desactivados no aparecen en la cola ni pueden seleccionarse</span></div><div id="chapters" class="chapters"></div>
+<div class="hint"><strong>Versión v5.12 con cola y marca editables: </strong>El overlay ocupa solo una franja inferior. Al cambiar de juego, muestra la descripción unos segundos y se contrae suavemente. <strong>Modo tráiler</strong> lo hace aún más pequeño y esconde la cámara y la marca mientras ves videos.<p><strong>No tienes que usar «Interactuar» en OBS.</strong> Mantén este panel abierto y controla todo desde aquí. También funcionan las teclas <strong>←</strong> y <strong>→</strong> cuando esta ventana está seleccionada. <p>URL para tu fuente Navegador de OBS: <code>http://127.0.0.1:8767/overlay</code></p><p class="warn">El servidor local está desconectado. Abre <b>INICIAR_PANEL.bat</b> y deja su ventana encendida durante el directo.</p></div>
+</main><script>
+const games=[
+['1997','Grand Theft Auto','DMA Design, vista cenital y el nacimiento de una saga.'],
+['1999','GTA: London 1969 / 1961','Dos expansiones que llevaron GTA a Londres.'],
+['1999','Grand Theft Auto 2','Bandas, reputación y estética retrofuturista.'],
+['2001','Grand Theft Auto III','La revolución del mundo abierto en 3D.'],
+['2002','GTA: Vice City','Tommy Vercetti y la energía de los ochenta.'],
+['2004','GTA: San Andreas','CJ, tres ciudades y un universo de posibilidades.'],
+['2004','Grand Theft Auto Advance','GTA llega a Game Boy Advance.'],
+['2005','Liberty City Stories','Toni Cipriani regresa a Liberty City.'],
+['2006','Vice City Stories','Victor Vance en Vice City, 1984.'],
+['2008','Grand Theft Auto IV','Niko Bellic y una nueva Liberty City.'],
+['2009','The Lost and Damned','La historia de Johnny Klebitz.'],
+['2009','GTA: Chinatown Wars','La aventura portátil de Huang Lee.'],
+['2009','The Ballad of Gay Tony','Luis Lopez y la vida nocturna.'],
+['2013','Grand Theft Auto V','Tres protagonistas, Los Santos y Blaine County.'],
+['2013','GTA Online','La comunidad convierte Los Santos en un mundo vivo.'],
+['2021','The Trilogy — Definitive Edition','Tres clásicos reciben una nueva edición.'],
+['2022','GTA V / Online — PS5','Llegada a PS5 y nueva generación.'],
+['2025','GTA V Enhanced — PC','Mejoras técnicas en PC.'],
+['2026','Grand Theft Auto VI','Lucia, Jason y Leonida.']
+];
+const $=id=>document.getElementById(id);
+let state={index:0,camera:false,timeline:true,hudVisible:true,cinema:false,logos:true,flash:0,revision:0,musicEnabled:true,musicVolume:55,musicSeconds:20,musicCue:0,musicStop:0,transitionEnabled:true,transitionPhase:'idle',transitionToken:0,phaseSince:0,introToken:0,beatLevel:0,ps5Frame:false,ps5X:1320,ps5Y:135,ps5Width:520,camX:1588,camY:799,camWidth:280};
+let musicTracks=[];let currentMusicIndex=-1;
+const allIndices=Array.from({length:games.length},(_,i)=>i);
+const defaultMain=[0,2,3,4,5,9,13,18];
+let queueSignature='',pendingConfig=null,sendingConfig=null,configBusy=false;
+let brandingDirty=false;
+function activeQueue(s=state){return Array.isArray(s.queue)&&s.queue.length?s.queue:allIndices.filter(i=>s.enabledGames?.[i]!==false)}
+function makeConfig(source){return {
+ enabledGames:[...(source.enabledGames||allIndices.map(()=>true))],
+ gameTitles:[...(source.gameTitles||allIndices.map(()=>true))],
+ gameLogos:[...(source.gameLogos||allIndices.map(()=>true))],
+ titleVisible:source.titleVisible!==false,logos:source.logos!==false,
+ brandMarkVisible:source.brandMarkVisible!==false,
+ brandNameVisible:source.brandNameVisible!==false,
+ brandSubtitleVisible:source.brandSubtitleVisible!==false,
+ brandName:source.brandName??'ITSOCHO',brandSubtitle:source.brandSubtitle??'THE ROAD TO GTA VI'
+ }}
+const queueGrid=$('queue-grid');
+queueGrid.innerHTML=games.map((g,i)=>`<div class="queue-item" data-queue-card="${i}"><label class="queue-name"><input type="checkbox" data-enabled="${i}" checked> <small>${String(i+1).padStart(2,'0')}</small> ${g[1]}</label><div class="queue-options"><label><input type="checkbox" data-game-title="${i}" checked> Título</label><label><input type="checkbox" data-game-logo="${i}" checked> Logo</label></div></div>`).join('');
+function renderConfig(cfg,idx,disableTextOverride=false){
+ const queue=allIndices.filter(i=>cfg.enabledGames[i]);
+ $('queue-counter').textContent=`${queue.length} / 19 GTA activos`;
+ $('queue-preview').replaceChildren(...queue.map((i,j)=>{const chip=document.createElement('span');chip.className='queue-chip'+(i===idx?' live':'');chip.textContent=`${j+1}. ${games[i][1]}`;return chip}));
+ for(const i of allIndices){
+  const card=queueGrid.querySelector(`[data-queue-card="${i}"]`);
+  card.classList.toggle('disabled-game',!cfg.enabledGames[i]);card.classList.toggle('current-game',i===idx);
+  card.querySelector('[data-enabled]').checked=cfg.enabledGames[i];
+  card.querySelector('[data-game-title]').checked=cfg.gameTitles[i];
+  card.querySelector('[data-game-logo]').checked=cfg.gameLogos[i];
+ }
+ for(const [id,key] of [['show-brand-mark','brandMarkVisible'],['show-brand-name','brandNameVisible'],['show-brand-subtitle','brandSubtitleVisible'],['show-title-global','titleVisible'],['show-logo-global','logos']])$(id).checked=cfg[key];
+ if(!brandingDirty&&!disableTextOverride){$('brand-name-input').value=cfg.brandName;$('brand-subtitle-input').value=cfg.brandSubtitle;}
+}
+async function drainConfig(){
+ if(configBusy)return;configBusy=true;
+ while(pendingConfig){
+  const config=pendingConfig;pendingConfig=null;sendingConfig=config;
+  try{
+   const r=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'queue_update',config})});
+   const data=await r.json();if(!r.ok)throw Error(data.error||'No se pudo guardar la cola');
+   render(data);$('queue-feedback').textContent='✓ Guardado y sincronizado con OBS.';$('brand-feedback').textContent='✓ Configuración guardada en OBS.';
+  }catch(e){$('queue-feedback').textContent='⚠ '+e.message;$('brand-feedback').textContent='⚠ '+e.message;alert(e.message);}
+  sendingConfig=null;
+  if(pendingConfig)renderConfig(pendingConfig,state.index,true);
+ }
+ configBusy=false;
+}
+function editConfig(fn){
+ const cfg=makeConfig(pendingConfig||sendingConfig||state);fn(cfg);
+ if(!cfg.enabledGames.some(Boolean)){$('queue-feedback').textContent='Debes mantener al menos un GTA activado.';renderConfig(pendingConfig||makeConfig(state),state.index);return}
+ pendingConfig=cfg;renderConfig(cfg,state.index,true);$('queue-feedback').textContent='Guardando cambios…';drainConfig();
+}
+queueGrid.addEventListener('change',e=>{
+ const input=e.target;if(!(input instanceof HTMLInputElement))return;
+ if(input.hasAttribute('data-enabled')){const i=Number(input.dataset.enabled);editConfig(cfg=>{cfg.enabledGames[i]=input.checked});}
+ else if(input.hasAttribute('data-game-title')){const i=Number(input.dataset.gameTitle);editConfig(cfg=>{cfg.gameTitles[i]=input.checked})}
+ else if(input.hasAttribute('data-game-logo')){const i=Number(input.dataset.gameLogo);editConfig(cfg=>{cfg.gameLogos[i]=input.checked})}
+});
+$('queue-all').addEventListener('click',()=>editConfig(c=>{c.enabledGames.fill(true)}));
+$('queue-main').addEventListener('click',()=>editConfig(c=>{c.enabledGames=c.enabledGames.map((_,i)=>defaultMain.includes(i))}));
+for(const [id,key] of [['show-brand-mark','brandMarkVisible'],['show-brand-name','brandNameVisible'],['show-brand-subtitle','brandSubtitleVisible'],['show-title-global','titleVisible'],['show-logo-global','logos']]){
+ $(id).addEventListener('change',e=>editConfig(c=>{c[key]=e.target.checked}));
+}
+for(const id of ['brand-name-input','brand-subtitle-input'])$(id).addEventListener('input',()=>{brandingDirty=true;$('brand-feedback').textContent='Texto pendiente de guardar.'});
+$('brand-save').addEventListener('click',()=>{
+ const name=$('brand-name-input').value.trim().slice(0,48),subtitle=$('brand-subtitle-input').value.trim().slice(0,64);
+ brandingDirty=false;editConfig(c=>{c.brandName=name;c.brandSubtitle=subtitle});
+});
+$('brand-reset').addEventListener('click',()=>{brandingDirty=false;editConfig(c=>{c.brandName='ITSOCHO';c.brandSubtitle='THE ROAD TO GTA VI'})});
+$('chapters').innerHTML=games.map((g,i)=>`<button class="item" data-jump="${i}"><span class="date">${String(i+1).padStart(2,'0')} · ${g[0]}</span><span class="name">${g[1]}</span></button>`).join('');
+$('jump').innerHTML='<option value="">Saltar a un juego...</option>'+games.map((g,i)=>`<option value="${i}">${g[0]} — ${g[1]}</option>`).join('');
+function render(s){state=s;const g=games[s.index];const queue=activeQueue(s),position=queue.indexOf(s.index);
+ renderConfig(pendingConfig||sendingConfig||makeConfig(s),s.index);
+ $('panel-brand-name').textContent=s.brandName||'ITSOCHO';$('panel-brand-subtitle').textContent=s.brandSubtitle||'THE ROAD TO GTA VI';
+ const busy=(s.transitionPhase||'idle')!=='idle';
+ const labels={idle:'● Listo',hud_out:'1/5 · Ocultando HUD',door_close:'2/5 · Cerrando compuertas',intro:'3/5 · Logo + música',door_open:'4/5 · Abriendo compuertas',hud_in:'5/5 · Revelando HUD'};
+ $('cine-status').textContent=(labels[s.transitionPhase]||'● Listo')+(s.transitionPhase==='intro'?(s.beatLive?' · Reacción a bajos reales':(s.audioConnected?' · Audio activo / rebote continuo':' · Rebote continuo')):'');
+ $('cine-toggle').textContent='✨ Transiciones: '+(s.transitionEnabled!==false?'activadas':'desactivadas');
+ $('cine-toggle').classList.toggle('active',s.transitionEnabled!==false);
+ $('cine-replay').disabled=busy;$('cine-next').disabled=busy||position===queue.length-1;
+ $('cine-skip').disabled=!busy;
+ document.querySelectorAll('[data-jump]').forEach(x=>x.disabled=busy||!queue.includes(Number(x.dataset.jump)));
+ $('jump').disabled=busy;
+ const key=queue.join(',');if(key!==queueSignature){queueSignature=key;
+ $('jump').replaceChildren(new Option('Saltar a un juego...',''),...queue.map(i=>new Option(games[i][0]+' — '+games[i][1],String(i))));}
+$('year').textContent=g[0];$('title').textContent=g[1];$('note').textContent=g[2];$('count').textContent=`${String(position+1).padStart(2,'0')} / ${queue.length}`;$('fill').style.width=`${position/Math.max(1,queue.length-1)*100}%`;
+ $('queue-start').textContent=`${games[queue[0]][0]} · ${games[queue[0]][1]}`;
+ $('queue-end').textContent=`${games[queue[queue.length-1]][0]} · ${games[queue[queue.length-1]][1]}`;
+ const hidden=s.hudVisible===false;const hudBtn=$('hud-toggle');
+ hudBtn.textContent=hidden?'◉ Mostrar HUD':'◉ Ocultar HUD';hudBtn.classList.toggle('hud-is-hidden',hidden);hudBtn.setAttribute('aria-pressed',String(hidden));
+ $('hud-state').textContent=hidden?'● Oculto en OBS':'● Visible en OBS';$('hud-state').classList.toggle('is-hidden',hidden);
+ $('ps5-toggle').textContent=s.ps5Frame?'▣ Ocultar PS5':'▣ Mostrar PS5';
+ $('ps5-toggle').classList.toggle('active',!!s.ps5Frame);
+ if(!ps5Editing){$('ps5-x').value=s.ps5X??1345;$('ps5-y').value=s.ps5Y??130;$('ps5-width').value=s.ps5Width??520;syncPs5Preset(s)}
+ if(!camEditing){$('cam-x').value=s.camX??1588;$('cam-y').value=s.camY??799;$('cam-width').value=s.camWidth??280;syncCamPreset()}
+ paintCamScene();
+ $('cam').textContent='📹 Cámara: '+(s.camera?'visible':'oculta');$('timeline').textContent='◉ Línea del tiempo: '+(s.timeline?'visible':'oculta');$('cam').classList.toggle('active',s.camera);$('timeline').classList.toggle('active',s.timeline);$('cinema').textContent='🎬 Modo tráiler: '+(s.cinema?'activado':'desactivado');$('cinema').classList.toggle('active',s.cinema);$('logos').textContent='🖼️ Logos: '+(s.logos===false?'ocultos':'visibles');$('logos').classList.toggle('active',s.logos!==false);$('music-enabled').textContent='♫ Música: '+(s.musicEnabled?'activada':'desactivada');$('music-enabled').classList.toggle('active',s.musicEnabled);
+ if(document.activeElement!==$('music-volume')){$('music-volume').value=s.musicVolume;}
+ if(document.activeElement!==$('music-seconds')){$('music-seconds').value=s.musicSeconds;}
+ $('volume-label').textContent=$('music-volume').value+'%';$('seconds-label').textContent=$('music-seconds').value+' s';
+ $('music-game-name').textContent=g[1];if(currentMusicIndex!==s.index){currentMusicIndex=s.index;renderMusicInfo()}
+ $('prev').disabled=position===0||busy;$('next').disabled=position===queue.length-1||busy;$('last').disabled=busy;
+ $('last').textContent='Ir a '+games[queue[queue.length-1]][1]+' ⏭';
+ document.querySelectorAll('[data-jump]').forEach(el=>{const i=Number(el.dataset.jump);el.classList.toggle('active',i===s.index);el.classList.toggle('disabled-game',!queue.includes(i))});}
+function online(ok){$('status').classList.toggle('offline',!ok);$('statusText').textContent=ok?'Panel conectado y listo':'Servidor local desconectado';}
+async function poll(){try{const r=await fetch('/api/state',{cache:'no-store'});if(!r.ok)throw Error();const s=await r.json();if(s.revision!==state.revision||!window.ready||(s.transitionPhase==='intro' && s.beatLive!==state.beatLive)){render(s);window.ready=true;}online(true);}catch{online(false)}}
+async function command(action,index){if(action==='camera')return toggleCameraAndOBS();if(action==='ps5_toggle')return togglePs5AndOBS();try{const response=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,index})});const data=await response.json();if(!response.ok)throw Error(data.error||'Comando rechazado');render(data);online(true);}catch(e){online(false);alert(e.message)}}
+
+// OBS WebSocket 5.x: browser-side client so Python needs zero extra modules.
+// Only connects to OBS on 127.0.0.1; password is NEVER saved to files or localStorage.
+const OBS_PREF_KEY='itsocho-v510-obs-camera';
+let savedObs={};try{savedObs=JSON.parse(localStorage.getItem(OBS_PREF_KEY)||'{}')}catch{}
+$('obs-port').value=String(savedObs.port||4455);
+let obsSelection=typeof savedObs.source==='string'?savedObs.source:'';
+let ps5ObsSelection=typeof savedObs.ps5Source==='string'?savedObs.ps5Source:'';
+let ps5Busy=false;let ps5Editing=false;let camEditing=false;let camSaving=false;
+let obsBusy=false;
+let obsTargets=[];
+const obsClient={socket:null,online:false,pending:new Map(),counter:0,session:0};
+function saveObsPref(){try{localStorage.setItem(OBS_PREF_KEY,JSON.stringify({source:obsSelection,ps5Source:ps5ObsSelection,port:Number($('obs-port').value)}))}catch{}}
+function obsStatus(connected,detail){const element=$('obs-status');element.classList.toggle('connected',connected);element.textContent=connected?'● OBS conectado':('○ '+(detail||'OBS no conectado · Solo marco'));$('obs-refresh').disabled=!connected;$('obs-connect').textContent=connected?'Desconectar OBS':'Conectar a OBS';}
+function obsFeedback(message,isError=false){let el=$('obs-feedback');el.textContent=message;el.classList.toggle('error',isError)}
+function obsRejectPending(reason){for(const p of obsClient.pending.values()){clearTimeout(p.timer);p.reject(Error(reason))}obsClient.pending.clear()}
+function obsDisconnect(){const old=obsClient.socket;obsClient.session++;obsClient.online=false;obsClient.socket=null;obsTargets=[];obsRejectPending('OBS desconectado');if(old){old.onclose=null;old.onerror=null;old.onmessage=null;try{old.close()}catch{}}obsStatus(false);$('obs-source').disabled=true;$('ps5-obs-source').disabled=true;}
+async function obsSHA256(text){if(!crypto.subtle)throw Error('El navegador no permite autenticación segura. Abre el panel en http://127.0.0.1:8767/panel');const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));return btoa(String.fromCharCode(...new Uint8Array(bytes)))}
+async function obsAuth(pass,salt,challenge){const secret=await obsSHA256(pass+salt);return obsSHA256(secret+challenge)}
+async function obsConnect(){
+ const port=Number($('obs-port').value);if(!Number.isInteger(port)||port<1||port>65535)throw Error('Puerto WebSocket inválido');
+ const pass=$('obs-password').value;
+ obsDisconnect();const session=obsClient.session;
+ obsFeedback('Conectando con OBS Studio...');
+ return new Promise((resolve,reject)=>{
+  let settled=false;
+  const ws=new WebSocket('ws://127.0.0.1:'+port);obsClient.socket=ws;
+  const timer=setTimeout(()=>fail('OBS no respondió. Activa el servidor WebSocket desde Herramientas en OBS.'),6500);
+  function fail(msg){if(settled)return;settled=true;clearTimeout(timer);try{ws.close()}catch{};if(session===obsClient.session)obsDisconnect();reject(Error(msg))}
+  ws.onerror=()=>fail('No pude conectar a OBS. Revisa el puerto 4455 y que el servidor WebSocket esté activado.');
+  ws.onclose=()=>{if(!settled)return fail('OBS cerró la conexión.');if(session===obsClient.session){obsDisconnect();obsFeedback('Se perdió la conexión con OBS. Pulsa «Conectar» para recuperarla.',true)}};
+  ws.onmessage=async event=>{
+   if(session!==obsClient.session)return;
+   try{
+    const msg=JSON.parse(event.data);
+    if(msg.op===0){
+      const d={rpcVersion:1};
+      if(msg.d?.authentication){if(!pass)return fail('OBS tiene contraseña. Escríbela en el campo de arriba.');d.authentication=await obsAuth(pass,msg.d.authentication.salt,msg.d.authentication.challenge)}
+      if(ws.readyState!==WebSocket.OPEN)return fail('OBS cerró la conexión durante la autenticación');
+      ws.send(JSON.stringify({op:1,d}));
+    }else if(msg.op===2){settled=true;clearTimeout(timer);obsClient.online=true;obsStatus(true);saveObsPref();resolve()}
+    else if(msg.op===7){const id=msg.d?.requestId;const p=obsClient.pending.get(id);if(!p)return;obsClient.pending.delete(id);clearTimeout(p.timer);if(msg.d?.requestStatus?.result)p.resolve(msg.d?.responseData||{});else p.reject(Error(msg.d?.requestStatus?.comment||('OBS rechazó '+p.type+' ('+msg.d?.requestStatus?.code+')')))}
+   }catch(e){if(!settled)fail('No se pudo autenticar: '+e.message);else obsFeedback('Error en OBS: '+e.message,true)}
+  };
+ });
+}
+function obsRequest(type,data={}){
+ if(!obsClient.online||obsClient.socket?.readyState!==WebSocket.OPEN)return Promise.reject(Error('OBS está desconectado'));
+ return new Promise((resolve,reject)=>{
+  const id='itsocho-'+(++obsClient.counter);const timer=setTimeout(()=>{obsClient.pending.delete(id);reject(Error('OBS no respondió a '+type))},5000);
+  obsClient.pending.set(id,{resolve,reject,timer,type});
+  try{obsClient.socket.send(JSON.stringify({op:6,d:{requestType:type,requestId:id,requestData:data}}))}catch(e){clearTimeout(timer);obsClient.pending.delete(id);reject(e)}
+ });
+}
+async function obsAllCameraItems(){
+ const sceneList=await obsRequest('GetSceneList');
+ const groups=await obsRequest('GetGroupList').catch(()=>({groups:[]}));
+ const containers=[...(sceneList.scenes||[]).map(s=>({name:s.sceneName,group:false})),...(groups.groups||[]).map(name=>({name,group:true}))];
+ const items=[];const seen=new Set();
+ for(const container of containers){
+  let data;
+  try{data=await obsRequest(container.group?'GetGroupSceneItemList':'GetSceneItemList',{sceneName:container.name})}catch{continue}
+  for(const item of data.sceneItems||[]){
+   if(typeof item.sourceName!=='string'||!Number.isInteger(item.sceneItemId))continue;
+   const id=container.name+'\x00'+item.sceneItemId;
+   if(!seen.has(id)){seen.add(id);items.push({sceneName:container.name,sceneItemId:item.sceneItemId,sourceName:item.sourceName,enabled:!!item.sceneItemEnabled,group:container.group})}
+  }
+ }
+ return items;
+}
+async function obsRefreshSources(){
+ if(!obsClient.online)throw Error('Conecta primero OBS');
+ obsFeedback('Buscando fuentes en tus escenas y grupos...');
+ obsTargets=await obsAllCameraItems();
+ const names=[...new Set(obsTargets.map(x=>x.sourceName))].sort((a,b)=>a.localeCompare(b,'es'));
+ const sel=$('obs-source');sel.replaceChildren();
+ const blank=document.createElement('option');blank.value='';blank.textContent='Selecciona tu webcam...';sel.appendChild(blank);
+ for(const name of names){const option=document.createElement('option');option.value=name;option.textContent=name;sel.appendChild(option)}
+ sel.disabled=false;
+ sel.value=names.includes(obsSelection)?obsSelection:'';
+ if(sel.value!==obsSelection){obsSelection='';saveObsPref()}
+ const ps5sel=$('ps5-obs-source');ps5sel.replaceChildren();
+ const empty=document.createElement('option');empty.value='';empty.textContent='Selecciona la captura PS5...';ps5sel.appendChild(empty);
+ for(const name of names){const option=document.createElement('option');option.value=name;option.textContent=name;ps5sel.appendChild(option)}
+ ps5sel.disabled=false;ps5sel.value=names.includes(ps5ObsSelection)?ps5ObsSelection:'';
+ if(ps5sel.value!==ps5ObsSelection){ps5ObsSelection='';saveObsPref()}
+ obsFeedback('Encontré '+names.length+' fuentes. Selecciona la de tu cámara y, opcionalmente, la captura PS5.');
+}
+async function setObsSourceEnabled(sourceName,enabled){
+ if(!obsClient.online)throw Error('OBS está desconectado. Pulsa «Conectar a OBS».');
+ if(!sourceName)throw Error('Selecciona la fuente de OBS correspondiente.');
+ const all=await obsAllCameraItems();const matches=all.filter(item=>item.sourceName===sourceName);
+ if(!matches.length)throw Error('No encontré «'+sourceName+'» en las escenas o grupos de OBS. Pulsa Actualizar fuentes.');
+ const changed=[];
+ try{for(const item of matches){if(item.enabled===enabled)continue;
+   await obsRequest('SetSceneItemEnabled',{sceneName:item.sceneName,sceneItemId:item.sceneItemId,sceneItemEnabled:enabled});changed.push(item)}}
+ catch(e){for(const item of changed.reverse())try{await obsRequest('SetSceneItemEnabled',{sceneName:item.sceneName,sceneItemId:item.sceneItemId,sceneItemEnabled:item.enabled})}catch{};throw e}
+ return {matches,changed};
+}
+async function setObsCameraEnabled(enabled){
+ if(!obsClient.online)throw Error('OBS no está conectado. Usa «Conectar a OBS» primero.');
+ if(!obsSelection)throw Error('Selecciona la fuente de tu cámara en el desplegable.');
+ // Re-read IDs before every toggle: scene items can change when you reorganize OBS.
+ const all=await obsAllCameraItems();
+ const matches=all.filter(item=>item.sourceName===obsSelection);
+ if(!matches.length)throw Error('La fuente «'+obsSelection+'» ya no está en ninguna escena o grupo de OBS. Pulsa Actualizar fuentes.');
+ const changed=[];
+ try{
+  for(const item of matches){
+   if(item.enabled===enabled)continue;
+   await obsRequest('SetSceneItemEnabled',{sceneName:item.sceneName,sceneItemId:item.sceneItemId,sceneItemEnabled:enabled});
+   changed.push(item);
+  }
+ }catch(e){
+  // Revert items already changed to avoid leaving the camera half-toggled.
+  for(const item of changed.reverse())try{await obsRequest('SetSceneItemEnabled',{sceneName:item.sceneName,sceneItemId:item.sceneItemId,sceneItemEnabled:item.enabled})}catch{}
+  throw e;
+ }
+ return {matches,changed};
+}
+async function toggleCameraAndOBS(){
+ if(obsBusy)return;obsBusy=true;$('cam').disabled=true;
+ const target=!state.camera;const sync=$('obs-sync-enable').checked && obsSelection!=='';
+ let result=null;
+ try{
+  if(sync){
+   if(!obsClient.online)throw Error('Tu cámara está vinculada a OBS, pero OBS está desconectado. Reconecta para cambiar cámara y marco juntos.');
+   result=await setObsCameraEnabled(target);
+  }
+  const r=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'camera'})});
+  const updated=await r.json();if(!r.ok)throw Error(updated.error||'No se pudo actualizar el marco');
+  render(updated);online(true);
+  if(sync)obsFeedback((target?'Cámara y marco ACTIVADOS':'Cámara y marco DESACTIVADOS')+' en '+result.matches.length+' escena(s)/grupo(s).');
+  else obsFeedback('Solo cambió el marco. Conecta OBS y selecciona tu cámara para sincronizar ambos.');
+ }catch(err){
+  if(result){for(const item of result.changed)try{await obsRequest('SetSceneItemEnabled',{sceneName:item.sceneName,sceneItemId:item.sceneItemId,sceneItemEnabled:item.enabled})}catch{}}
+  obsFeedback(err.message,true);
+ }finally{obsBusy=false;$('cam').disabled=false}
+}
+
+// v5.14 · Movable webcam: the on-screen neon frame and the OBS capture
+// have separate operations. OBS transform is opt-in to avoid altering scenes by surprise.
+const camScene=$('cam-scene'),camBox=$('cam-drag-box');
+const camInputs=['cam-x','cam-y','cam-width'];
+function camLayout(){return {x:Number($('cam-x').value),y:Number($('cam-y').value),width:Number($('cam-width').value)}}
+function cameraLayoutValid({x,y,width}){return [x,y,width].every(Number.isInteger) && width>=180&&width<=700&&x>=0&&y>=0&&x+width<=1920&&y+Math.round(width*3/4)<=1080}
+function camPresetXY(key,w){const h=Math.round(w*3/4),margin=48;
+ if(key==='top-left')return [margin,margin];if(key==='top-right')return [1920-w-margin,margin];
+ if(key==='bottom-left')return [margin,1080-h-70];if(key==='bottom-right')return [1920-w-52,1080-h-71];
+ if(key==='center')return [Math.round((1920-w)/2),Math.round((1080-h)/2)];return null}
+function syncCamPreset(){const v=camLayout();let match='custom';for(const key of ['bottom-right','bottom-left','top-right','top-left','center']){
+ const xy=camPresetXY(key,v.width);if(xy&&Math.abs(v.x-xy[0])<3&&Math.abs(v.y-xy[1])<3){match=key;break}}
+ $('cam-preset').value=match;}
+function paintCamScene(){const v=camLayout(),rect=camScene.getBoundingClientRect(),w=rect.width||600;
+ // Percentage-based dimensions keep drag behavior precise in desktop/mobile sizes.
+ camBox.style.left=(v.x/1920*100)+'%';camBox.style.top=(v.y/1080*100)+'%';
+ camBox.style.width=(v.width/1920*100)+'%';camBox.style.height=(Math.round(v.width*.75)/1080*100)+'%';
+ camBox.setAttribute('aria-valuenow',String(v.x));
+ const px=Number(state.ps5X??1345),py=Number(state.ps5Y??130),pw=Number(state.ps5Width??520);
+ const ghost=$('cam-ps5-ghost');ghost.style.left=(px/1920*100)+'%';ghost.style.top=(py/1080*100)+'%';ghost.style.width=(pw/1920*100)+'%';ghost.style.height=(pw*9/16/1080*100)+'%';ghost.style.opacity=state.ps5Frame?'.8':'.3';
+}
+function camFeedback(message,error=false){const el=$('cam-layout-feedback');el.textContent=message;el.classList.toggle('error',error)}
+function camEdit(x,y,w){w=Math.max(180,Math.min(700,Math.round(w)));x=Math.max(0,Math.min(1920-w,Math.round(x)));y=Math.max(0,Math.min(1080-Math.round(w*.75),Math.round(y)));
+ $('cam-x').value=x;$('cam-y').value=y;$('cam-width').value=w;camEditing=true;syncCamPreset();paintCamScene();}
+$('cam-preset').addEventListener('change',()=>{const w=Math.round(Number($('cam-width').value))||280;const xy=camPresetXY($('cam-preset').value,w);if(xy)camEdit(...xy,w)});
+for(const id of camInputs)$(id).addEventListener('input',()=>{camEditing=true;$('cam-preset').value='custom';paintCamScene()});
+let dragCam=null;
+camBox.addEventListener('pointerdown',ev=>{if(ev.button!==0&&ev.pointerType==='mouse')return;ev.preventDefault();
+ const r=camScene.getBoundingClientRect(),v=camLayout();dragCam={id:ev.pointerId,sx:ev.clientX,sy:ev.clientY,x:v.x,y:v.y};camBox.setPointerCapture(ev.pointerId);});
+camBox.addEventListener('pointermove',ev=>{if(!dragCam||ev.pointerId!==dragCam.id)return;
+ const r=camScene.getBoundingClientRect();camEdit(dragCam.x+(ev.clientX-dragCam.sx)*1920/r.width,dragCam.y+(ev.clientY-dragCam.sy)*1080/r.height,Number($('cam-width').value)||280);});
+camBox.addEventListener('pointerup',async ev=>{if(!dragCam||ev.pointerId!==dragCam.id)return;dragCam=null;await saveCamLayout()});
+camBox.addEventListener('pointercancel',()=>{dragCam=null});
+camBox.addEventListener('keydown',ev=>{const offset=ev.shiftKey?10:1;const step={ArrowLeft:[-offset,0],ArrowRight:[offset,0],ArrowUp:[0,-offset],ArrowDown:[0,offset]}[ev.key];if(!step)return;ev.preventDefault();const v=camLayout();camEdit(v.x+step[0],v.y+step[1],v.width)});
+camBox.addEventListener('keyup',ev=>{if(ev.key.startsWith('Arrow'))saveCamLayout()});
+// Each OBS scene has its own Scene Item transform. Don't touch unrelated sources.
+// Camera can be in several scenes; transform only direct scene entries. Nested groups
+// are skipped because their coordinates are relative to the group, not the scene.
+async function obsPlaceCamera({x,y,width}){
+ if(!obsClient.online)throw Error('Conecta OBS antes de mover la webcam real.');
+ if(!obsSelection)throw Error('Selecciona la fuente de webcam en OBS antes de sincronizar su posición.');
+ const items=await obsAllCameraItems();const chosen=items.filter(i=>i.sourceName===obsSelection&&!i.group);
+ if(!chosen.length)throw Error('No encontré la webcam como fuente directa de ninguna escena. Si está dentro de un grupo, muévela manualmente en OBS.');
+ const old=[];const changed=[];
+ try{
+  for(const item of chosen){const r=await obsRequest('GetSceneItemTransform',{sceneName:item.sceneName,sceneItemId:item.sceneItemId});old.push({item,transform:r.sceneItemTransform});
+   const transform={positionX:x,positionY:y,alignment:5,boundsType:'OBS_BOUNDS_SCALE_OUTER',boundsWidth:width,boundsHeight:Math.round(width*.75)};
+   await obsRequest('SetSceneItemTransform',{sceneName:item.sceneName,sceneItemId:item.sceneItemId,sceneItemTransform:transform});changed.push(item);
+  }
+ }catch(e){for(const r of old.reverse())if(changed.includes(r.item)){const prev=r.transform;
+  const rollback={positionX:prev.positionX,positionY:prev.positionY,alignment:prev.alignment,boundsType:prev.boundsType,boundsWidth:prev.boundsWidth,boundsHeight:prev.boundsHeight,scaleX:prev.scaleX,scaleY:prev.scaleY};
+  try{await obsRequest('SetSceneItemTransform',{sceneName:r.item.sceneName,sceneItemId:r.item.sceneItemId,sceneItemTransform:rollback})}catch{}}
+  throw e;}
+ return chosen.length;
+}
+async function saveCamLayout(){if(camSaving)return;const v=camLayout();if(!cameraLayoutValid(v)){camFeedback('Posición inválida. El marco 4:3 debe quedar dentro de 1920×1080; ancho 180–700.',true);return}
+ camSaving=true;$('cam-save-layout').disabled=true;try{
+  // Server-side value remains authoritative. If OBS fails, do not claim both moved.
+  const r=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'camera_layout',...v})});const s=await r.json();if(!r.ok)throw Error(s.error||'No se guardó la cámara');
+  camEditing=false;render(s);let msg='Marco actualizado y guardado en X '+v.x+', Y '+v.y+' · '+v.width+'×'+Math.round(v.width*.75)+' px.';
+  if($('cam-follow-obs').checked){try{const n=await obsPlaceCamera(v);msg+=' Webcam alineada en '+n+' escena(s) de OBS.';}catch(e){camFeedback(msg+' OBS no se movió: '+e.message,true);return}}
+  else msg+=' La captura de OBS no se movió (casilla desactivada).';
+  camFeedback(msg);
+ }catch(e){camFeedback(e.message,true)}finally{camSaving=false;$('cam-save-layout').disabled=false}
+}
+$('cam-save-layout').addEventListener('click',saveCamLayout);
+if('ResizeObserver'in window)new ResizeObserver(paintCamScene).observe(camScene);
+
+// v5.11: PS5 download capture is independent from webcam and chapter state.
+function ps5Feedback(message,error=false){const el=$('ps5-feedback');el.textContent=message;el.classList.toggle('error',error)}
+function syncPs5Preset(s){
+ const choices={
+  'top-right':[1920-(s.ps5Width||520)-55,130],
+  'top-left':[55,130],
+  'bottom-left':[55,1080-Math.round((s.ps5Width||520)*9/16)-90],
+  'bottom-right':[1920-(s.ps5Width||520)-55,1080-Math.round((s.ps5Width||520)*9/16)-90]
+ };
+ let matched='custom';for(const [name,xy] of Object.entries(choices))if(Math.abs((s.ps5X??1345)-xy[0])<3&&Math.abs((s.ps5Y??130)-xy[1])<3)matched=name;
+ $('ps5-preset').value=matched;
+}
+function ps5UpdatePreset(){const where=$('ps5-preset').value;if(where==='custom')return;
+ const w=Number($('ps5-width').value)||520,h=Math.round(w*9/16);
+ $('ps5-x').value=where.endsWith('right')?1920-w-55:55;
+ $('ps5-y').value=where.startsWith('top')?130:1080-h-90;
+ ps5Editing=true;
+}
+$('ps5-preset').addEventListener('change',ps5UpdatePreset);
+for(const id of ['ps5-x','ps5-y','ps5-width'])$(''+id).addEventListener('input',()=>{ps5Editing=true;if(id==='ps5-width'&&$('ps5-preset').value!=='custom')ps5UpdatePreset();else $('ps5-preset').value='custom'});
+$('ps5-save-layout').addEventListener('click',async()=>{
+ const x=Number($('ps5-x').value),y=Number($('ps5-y').value),width=Number($('ps5-width').value);
+ if(![x,y,width].every(Number.isInteger)||width<320||width>850||x<0||x>1920-width||y<0||y>1080-Math.round(width*9/16)){
+  ps5Feedback('Posición fuera de pantalla. El ancho debe estar entre 320 y 850 y el marco debe caber en 1920×1080.',true);return;
+ }
+ $('ps5-save-layout').disabled=true;
+ try{const r=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'ps5_layout',x,y,width})});
+   const data=await r.json();if(!r.ok)throw Error(data.error||'No se guardó la posición');
+   ps5Editing=false;render(data);ps5Feedback('Posición guardada: X '+x+', Y '+y+', '+width+'×'+Math.round(width*9/16)+' px (16:9). La fuente de PS5 en OBS debe encajar en ese mismo rectángulo.');
+ }catch(e){ps5Feedback(e.message,true)}finally{$('ps5-save-layout').disabled=false}
+});
+$('ps5-obs-source').addEventListener('change',()=>{
+ ps5ObsSelection=$('ps5-obs-source').value;saveObsPref();
+ ps5Feedback(ps5ObsSelection?'Fuente PS5 vinculada: «'+ps5ObsSelection+'».':'Sin vincular: el botón mostrará solamente el marco.');
+});
+async function togglePs5AndOBS(){
+ if(ps5Busy)return;ps5Busy=true;$('ps5-toggle').disabled=true;
+ const target=!state.ps5Frame;
+ const sync=$('ps5-obs-sync').checked&&!!ps5ObsSelection;
+ let changed=null;
+ try{
+  if(sync){
+   if(ps5ObsSelection===obsSelection)throw Error('Elige otra fuente para PS5; no debe ser la misma webcam.');
+   changed=await setObsSourceEnabled(ps5ObsSelection,target);
+  }
+  const r=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'ps5_toggle'})});
+  const data=await r.json();if(!r.ok)throw Error(data.error||'No se pudo cambiar el marco PS5');
+  render(data);online(true);
+  ps5Feedback(sync?('Captura PS5 y marco '+(target?'VISIBLES':'OCULTOS')+' en '+changed.matches.length+' escena(s)/grupo(s).'):
+   ('Marco PS5 '+(target?'visible':'oculto')+'. Para sincronizar la imagen, conecta OBS y elige su fuente.'));
+ }catch(e){
+  if(changed)for(const item of changed.changed.reverse())try{await obsRequest('SetSceneItemEnabled',{sceneName:item.sceneName,sceneItemId:item.sceneItemId,sceneItemEnabled:item.enabled})}catch{}
+  ps5Feedback(e.message,true);
+ }finally{ps5Busy=false;$('ps5-toggle').disabled=false}
+}
+$('ps5-toggle').addEventListener('click',togglePs5AndOBS);
+
+$('obs-connect').addEventListener('click',async()=>{
+ if(obsClient.online){obsDisconnect();obsFeedback('OBS desconectado: el panel controla solo el marco.');return}
+ if(obsBusy)return;obsBusy=true;$('obs-connect').disabled=true;
+ try{await obsConnect();await obsRefreshSources();obsFeedback('OBS conectado. Selecciona la fuente real de la cámara para vincularla.')}
+ catch(e){obsFeedback(e.message,true);obsStatus(false,'OBS no conectado')}
+ finally{obsBusy=false;$('obs-connect').disabled=false}
+});
+$('obs-refresh').addEventListener('click',async()=>{try{await obsRefreshSources()}catch(e){obsFeedback(e.message,true)}});
+$('obs-source').addEventListener('change',()=>{obsSelection=$('obs-source').value;saveObsPref();obsFeedback(obsSelection?'Fuente «'+obsSelection+'» vinculada. El botón Cámara controlará también OBS.':'Ninguna fuente seleccionada: el botón controla solo el marco.')});
+$('obs-port').addEventListener('change',saveObsPref);
+$('obs-sync-enable').addEventListener('change',()=>obsFeedback($('obs-sync-enable').checked?'Sincronización con OBS habilitada.':'Sincronización deshabilitada: el botón solo cambia el marco.'));
+
+document.addEventListener('click',e=>{const btn=e.target.closest('[data-action],[data-jump]');if(!btn)return;if('jump'in btn.dataset)command('jump',Number(btn.dataset.jump));else command(btn.dataset.action);});
+$('jump').addEventListener('change',e=>{if(e.target.value!=='')command('jump',Number(e.target.value));e.target.value='';});
+document.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName))return;if(e.key==='ArrowRight'){e.preventDefault();command('next')}if(e.key==='ArrowLeft'){e.preventDefault();command('prev')}if(e.key==='Home'){e.preventDefault();command('first')}if(e.key==='End'){e.preventDefault();command('last')}});
+async function logoStatus(){
+ try{
+  const response=await fetch('/api/logos/status',{cache:'no-store'});
+  if(!response.ok)throw Error();const r=await response.json();
+  const count=r.ready.filter(Boolean).length;
+  const backups=(r.fallback||[]).filter(Boolean).length;
+  const label=r.downloading?'Buscando logos originales en segundo plano...':(count===19?'Todos los capitulos tienen logo.':'Logos disponibles');
+  $('logo-status').innerHTML=`<b>${count}/19</b> logos guardados localmente · ${label}${backups?' · '+backups+' respaldo(s) incluido(s), reemplazables desde el panel':''}${r.failures?.length&&!r.downloading?' · Puedes reintentar o subir uno propio.':''}`;
+ }catch{$('logo-status').textContent='No se puede consultar el estado de los logos.'}
+}
+$('retry-logos').addEventListener('click',async()=>{
+ $('logo-status').textContent='Iniciando la descarga de los logos...';
+ try{await fetch('/api/logos/retry',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});}catch{}
+ logoStatus();
+});
+$('upload-logo').addEventListener('change',async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ if(file.size>2_000_000){alert('El logo debe pesar menos de 2 MB.');e.target.value='';return;}
+ const idx=state.index;
+ try{
+  const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=reject;reader.readAsDataURL(file)});
+  const response=await fetch('/api/logos/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({index:idx,data:base64})});
+  if(!response.ok)throw Error((await response.json()).error||'No se pudo guardar');
+  $('logo-status').textContent=`Logo personalizado para ${games[idx][1]} guardado.`;
+  logoStatus();
+ }catch(err){alert('Error al subir logo: '+err.message)}e.target.value='';
+});
+
+// Music controls stay separate from the overlay, but share the same local state.
+async function musicCommand(action,extras={}){
+ try{const r=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...extras})});const data=await r.json();if(!r.ok)throw Error(data.error||'No se pudo actualizar');render(data)}catch(e){alert('Música: '+e.message)}
+}
+function renderMusicInfo(){const track=musicTracks[state.index];$('music-file-status').textContent=track?.ready?('✓ '+track.name):'Sin audio asignado — el cambio de GTA será silencioso';$('music-counter').textContent=activeQueue().filter(i=>musicTracks[i]?.ready).length+'/'+activeQueue().length;$('music-delete').disabled=!track?.ready}
+async function musicStatus(){try{const r=await fetch('/api/music/status',{cache:'no-store'});if(!r.ok)throw Error('Servidor');const payload=await r.json();musicTracks=payload.tracks||[];renderMusicInfo();$('music-status-dot').textContent='● Música lista para OBS';}catch(e){$('music-status-dot').textContent='○ No hay conexión con el servidor';}}
+$('music-enabled').addEventListener('click',()=>musicCommand('music_toggle'));
+$('music-play').addEventListener('click',()=>musicCommand('music_play'));
+$('music-stop').addEventListener('click',()=>musicCommand('music_stop'));
+let saveTimer;
+function saveMusicSettings(){clearTimeout(saveTimer);const volume=Number($('music-volume').value),seconds=Number($('music-seconds').value);saveTimer=setTimeout(()=>musicCommand('music_settings',{volume,seconds}),250)}
+$('music-volume').addEventListener('input',()=>{$('volume-label').textContent=$('music-volume').value+'%';saveMusicSettings()});
+$('music-seconds').addEventListener('input',()=>{$('seconds-label').textContent=$('music-seconds').value+' s';saveMusicSettings()});
+$('upload-music').addEventListener('change',async e=>{
+ const file=e.target.files?.[0];if(!file)return;const chapter=state.index;
+ if(file.size>30*1024*1024){alert('Máximo 30 MB por canción.');e.target.value='';return;}
+ const status=$('music-file-status');status.textContent='Subiendo '+file.name+'...';
+ try{const r=await fetch('/api/music/upload?index='+chapter+'&name='+encodeURIComponent(file.name),{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:file});const j=await r.json();if(!r.ok)throw Error(j.error||'No se pudo cargar');await musicStatus();status.textContent='✓ Guardado para '+games[chapter][1]+'. Pulsa ▶ Reproducir capítulo para escucharlo.';}catch(err){alert('Error de audio: '+err.message);await musicStatus()}finally{e.target.value=''}
+});
+$('music-delete').addEventListener('click',async()=>{const i=state.index;if(!musicTracks[i]?.ready)return;if(!confirm('¿Quitar la canción de '+games[i][1]+'?'))return;try{const r=await fetch('/api/music/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({index:i})});if(!r.ok)throw Error('No se pudo quitar');await musicStatus()}catch(err){alert(err.message)}});
+
+render(state);poll();logoStatus();musicStatus();setInterval(poll,550);setInterval(logoStatus,2500);setInterval(musicStatus,4500);
+</script>
+<script>
+// Studio layout is a presentation layer: original HTML controls and their event listeners
+// are moved into tab views, never cloned. No page reload and no OBS source changes.
+(()=>{
+ const main=document.querySelector('body>main');
+ if(!main)return;
+ const shell=document.createElement('div');shell.id='studio-shell';
+ const sidebar=document.createElement('aside');sidebar.id='studio-sidebar';sidebar.setAttribute('aria-label','Navegación principal');
+ const brand=document.createElement('div');brand.className='studio-brand';brand.innerHTML='<i>O</i><div>ITSOCHO STUDIO<small>THE ROAD TO GTA VI</small></div>';sidebar.append(brand);
+ const tabs=[['direct','Directo','◈'],['queue','Cola de GTA','☷'],['music','Música','♫'],['captures','OBS y PS5','▣'],['brand','Apariencia','◐'],['deck','Stream Deck','⌘'],['help','Ayuda','?']];
+ const navButtons=[];
+ for(let i=0;i<tabs.length;i++){
+  if(i===0||i===5){const lab=document.createElement('div');lab.className='nav-group-label';lab.textContent=i===0?'Producción':'Integraciones';sidebar.append(lab)}
+  const [id,label,icon]=tabs[i],button=document.createElement('button');button.type='button';button.className='nav-link';button.dataset.view=id;button.setAttribute('aria-controls','view-'+id);button.setAttribute('aria-selected','false');button.innerHTML='<span class="nav-icon">'+icon+'</span>'+label;
+  button.addEventListener('click',()=>navigate(id));sidebar.append(button);navButtons.push(button);
+ }
+ const sidebarEnd=document.createElement('div');sidebarEnd.className='sidebar-bottom';sidebarEnd.innerHTML='<strong>ItsOcho Studio v5.14</strong><div id="side-now">19 capítulos disponibles</div><div>Local · OBS:8767</div>';sidebar.append(sidebarEnd);
+ const views={};
+ for(const [id,title] of tabs){const wrapper=document.createElement('section');wrapper.id='view-'+id;wrapper.className='studio-view';wrapper.hidden=true;
+   const h=document.createElement('div');h.className='view-heading';h.innerHTML='<div><h2>'+title+'</h2><p>'+({direct:'Todo lo que necesitas mientras estás en directo.',queue:'Activa, ordena y presenta solo los capítulos que quieras.',music:'Asigna y controla la banda sonora de cada GTA.',captures:'Conecta tus fuentes y ajusta los marcos de cámara y PS5.',brand:'Cambia títulos, logos y la identidad de la transmisión.',deck:'Asigna botones de Stream Deck sin plugins adicionales.',help:'Enlaces, instalación y notas para OBS.'}[id])+'</p></div>';
+   wrapper.append(h);views[id]=wrapper;
+ }
+ const add=(name,id)=>{const el=main.querySelector(name);if(el)views[id].append(el);return el};
+ // Keep the existing header above the active view.
+ const header=main.querySelector(':scope>header');if(header)main.append(header);
+ add('.hero','direct');add('.controls','direct');add('.cine-card','direct');add('.hud-control','direct');add('.actions','direct');
+ add('.config-card','queue');
+ const editor=views.queue.querySelector('#brand-editor');if(editor){const brandCard=document.createElement('section');brandCard.className='config-card';brandCard.append(editor);editor.open=true;views.brand.append(brandCard)}
+ const queueEditor=views.queue.querySelector('#queue-editor');if(queueEditor)queueEditor.open=true;
+ const config=views.queue.querySelector('.config-card');if(config){const search=document.createElement('input');search.type='search';search.id='queue-filter';search.placeholder='Buscar GTA por nombre o año...';search.setAttribute('aria-label','Buscar en la cola');config.insertBefore(search,queueEditor);search.addEventListener('input',()=>{const q=search.value.trim().toLowerCase();document.querySelectorAll('.queue-item').forEach(el=>el.classList.toggle('filter-hidden',!!q&&!el.textContent.toLowerCase().includes(q)))});}
+ const chapterBar=main.querySelector('.bar');if(chapterBar)views.queue.append(chapterBar);
+ add('#chapters','queue');add('.music-card','music');add('.obs-card','captures');add('.ps5-card','captures');add('.logos-tools','brand');add('.hint','help');
+ const deckIntro=document.createElement('section');deckIntro.className='deck-intro';deckIntro.innerHTML='<strong>Stream Deck preparado para usarse cuando quieras.</strong><p>En la aplicación Stream Deck, añade una acción <b>Sistema → Sitio web</b>, pega el enlace de la acción y selecciona <b>GET request in background</b>. No se abrirá ninguna pestaña. Solo funciona mientras <code>INICIAR_PANEL.bat</code> siga abierto en este PC.</p><p>Los enlaces contienen una clave privada que identifica a tu panel local. No los compartas en el stream. Puedes controlar la cronología sin mantener esta pestaña enfocada.</p>';
+ views.deck.append(deckIntro);
+ const status=document.createElement('div');status.className='deck-status';status.id='deck-status';status.setAttribute('role','status');status.textContent='Cargando acciones...';views.deck.append(status);
+ const grid=document.createElement('div');grid.className='deck-grid';grid.id='deck-grid';views.deck.append(grid);
+ const note=document.createElement('div');note.className='deck-note';note.textContent='Nota: los botones de Cámara y PS5 cambian su marco en el overlay. Si conectaste OBS WebSocket en esta página y la dejas abierta, también intentamos sincronizar la fuente de captura. Si el panel está cerrado o OBS desconectado, solo cambian los marcos.';views.deck.append(note);
+ for(const view of Object.values(views))main.append(view);
+ main.id='studio-main';main.classList.add('studio-main');
+ main.parentNode.insertBefore(shell,main);shell.append(sidebar,main);
+ let urlsLoaded=false;
+ const navKey='itsocho-v513-tab';
+ function navigate(id){if(!views[id])id='direct';for(const [key,view] of Object.entries(views))view.hidden=key!==id;for(const b of navButtons)b.setAttribute('aria-selected',String(b.dataset.view===id));try{sessionStorage.setItem(navKey,id)}catch{}if(id==='deck')loadDeck();window.scrollTo({top:0,behavior:'instant'});}
+ window.studioNavigate=navigate;
+ let initial='direct';try{initial=location.hash.slice(1)||sessionStorage.getItem(navKey)||'direct'}catch{}
+ navigate(initial);
+ document.addEventListener('keydown',event=>{if(!event.ctrlKey||!/^Digit[1-7]$/.test(event.code))return;event.preventDefault();navigate(tabs[Number(event.code.slice(5))-1][0]);});
+ async function loadDeck(){if(urlsLoaded)return;try{const r=await fetch('/api/streamdeck/actions',{cache:'no-store'});if(!r.ok)throw Error('Servidor desconectado');const data=await r.json();grid.replaceChildren();
+  for(const item of data.items){const card=document.createElement('div');card.className='deck-item';const title=document.createElement('strong');title.textContent=item.name;const url=document.createElement('div');url.className='deck-url';url.textContent=item.url;url.title=item.url;const buttons=document.createElement('div');buttons.className='deck-actions';
+   const copy=document.createElement('button');copy.className='mini';copy.textContent='Copiar enlace';copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(item.url);status.textContent='Enlace copiado: '+item.name}catch{const temp=document.createElement('textarea');temp.value=item.url;document.body.append(temp);temp.select();document.execCommand('copy');temp.remove();status.textContent='Enlace copiado: '+item.name}});
+   const test=document.createElement('button');test.className='mini';test.textContent='Probar';test.addEventListener('click',async()=>{try{const res=await fetch(item.url,{cache:'no-store'});const body=await res.json();if(!res.ok)throw Error(body.error||'No se pudo ejecutar');status.textContent='Ejecutado: '+item.name}catch(e){status.textContent='No se pudo ejecutar: '+e.message}});buttons.append(copy,test);card.append(title,url,buttons);grid.append(card);}
+  status.textContent='Acciones listas. Copia cada enlace en su botón de Stream Deck.';urlsLoaded=true;
+ }catch(e){status.textContent='No se pudo conectar con el servidor: '+e.message}}
+ // Keep sidebar's chapter indicator in sync without replacing the existing render function.
+ let lastSeq=0;let deckSyncRunning=false;
+ async function reconcileDeck(s){
+  if(!s||!s.deckSeq||s.deckSeq===lastSeq)return;lastSeq=s.deckSeq;
+  if(!obsClient?.online)return;
+  if(s.deckAction!=='camera'&&s.deckAction!=='ps5_toggle')return;
+  if(deckSyncRunning)return;deckSyncRunning=true;
+  try{if(s.deckAction==='camera'&&obsSelection&&document.getElementById('obs-sync-enable').checked){await setObsSourceEnabled(obsSelection,!!s.camera);obsFeedback('Stream Deck sincronizó la cámara de OBS con el marco.');}
+      if(s.deckAction==='ps5_toggle'&&ps5ObsSelection&&document.getElementById('ps5-obs-sync').checked){await setObsSourceEnabled(ps5ObsSelection,!!s.ps5Frame);ps5Feedback('Stream Deck sincronizó la captura PS5 con el marco.');}}
+  catch(e){status.textContent='OBS no sincronizado: '+e.message;obsFeedback('Stream Deck: '+e.message,true)}finally{deckSyncRunning=false}
+ }
+ // Intercept existing render function without changing its own controls.
+ const previousRender=window.render;window.render=function(s){previousRender(s);const el=document.getElementById('side-now');if(el)el.textContent=(s.queueCount||19)+' GTA · '+(s.queuePosition||1)+' en directo';reconcileDeck(s)};
+})();
+</script>
+</body></html>

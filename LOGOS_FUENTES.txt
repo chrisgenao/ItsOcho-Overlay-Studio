@@ -1,0 +1,10 @@
+LOGOS DE GTA · ItsOcho Timeline
+=============================
+El programa obtiene logos de Wikimedia Commons (https://commons.wikimedia.org/wiki/Category:SVG_logos_of_Grand_Theft_Auto)
+y Grand Theft Wiki (https://www.grandtheftwiki.com/Category:Game_Logos).
+La descarga es automática solo cuando hay Internet, con almacenamiento local.
+Los logos son identificadores de títulos, asociados a Rockstar Games / Take-Two.
+No se atribuye afiliación ni patrocinio a Rockstar Games.
+
+Si falla algún logo, utiliza el botón «Poner logo propio» del panel para subir tu PNG/SVG.
+La selección se vincula al capítulo mostrado en ese momento.

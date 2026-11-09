@@ -1,0 +1,49 @@
+ITSOCHO — THE ROAD TO GTA VI · TIMELINE v5.5 + SOUNDTRACK
+=========================================================
+
+Se ha desarrollado sobre el Timeline v5.4 (la cámara con marco neón rosa/cyan,
+los logos, los 19 capítulos y las animaciones permanecen intactos).
+
+INICIAR (WINDOWS)
+1) Descomprime el ZIP COMPLETO en una carpeta nueva.
+2) Haz doble clic en INICIAR_PANEL.bat y deja abierta la consola.
+3) En OBS sigue usando el timeline normal:
+   http://127.0.0.1:8767/overlay (1920x1080)
+4) UNA SOLA VEZ: añade otra fuente "Navegador" llamada "ItsOcho Música GTA":
+   URL: http://127.0.0.1:8767/music
+   Ancho 1 / Alto 1 (solo audio, sin imagen)
+   Activa "Controlar audio mediante OBS" si tu OBS muestra esa casilla.
+   Deja esta fuente ACTIVA durante el directo.
+   En Propiedades de Audio Avanzadas deja el monitor de esta fuente en
+   "Monitor desactivado" para que no suene duplicada por escritorio.
+   Si ves dos medidores para el mismo audio, revisa tu configuración de captura.
+5) Abre el panel: http://127.0.0.1:8767/panel
+6) Selecciona cualquier juego, haz clic en "Elegir audio de mi PC" y guarda un
+   archivo para cada capítulo que quieras musicalizar (MP3 recomendado).
+7) Ajusta volumen y duración en el apartado "Música automática por capítulo".
+8) Pulsa "Reproducir capítulo" para probar en OBS. Cambiar a otro capítulo
+   reproducirá automáticamente la canción asignada a ese juego.
+   Si el juego no tiene archivo asignado, no sonará nada.
+
+ATENCIÓN AL AUDIO Y COPYRIGHT
+No se incluyen canciones de GTA ni de terceros; usa solo música para la que
+cuentes con permiso de uso en el stream. Incluso fragmentos breves pueden
+producir reclamaciones o silenciamiento de VOD en Kick.
+
+FUNCIONES
+- 19 juegos, audios distintos por capítulo.
+- Volumen entre 0 y 100%, persistente.
+- Duración automática de 3 a 120 segundos, persistente (20 s por defecto).
+- Fundido cruzado entre cambios rápidos de GTA, sin audio doble persistente.
+- Música automática activable/desactivable y botones de play/stop.
+- Audios guardados en musica/; conserva la carpeta al actualizar.
+- No necesita instalar dependencias de Python (Python 3.10+).
+- Hasta 30 MB por archivo; admite MP3, WAV, OGG, M4A, WEBM, FLAC. El soporte
+  de M4A y FLAC puede depender del decodificador de OBS; MP3 es preferible.
+- Si se reinicia el servidor, los audios permanecen guardados localmente.
+- No se inicia música automáticamente al cargar OBS: pulsa "Reproducir" o
+  cambia de capítulo para evitar una canción sorpresa al abrir el directo.
+
+Si no se oye: OBS > Mezclador de audio > ItsOcho Música GTA > volumen;
+verifica que la fuente de Navegador esté activa, se haya cargado el MP3,
+y que OBS no haya silenciado esa fuente. NO agregues /music como fuente dos veces.

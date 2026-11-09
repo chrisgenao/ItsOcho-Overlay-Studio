@@ -1,0 +1,29 @@
+ITSOCHO - THE ROAD TO GTA VI - TIMELINE v5.6
+============================================
+
+NUEVO CONTROL: OCULTAR/MOSTRAR HUD COMPLETO
+
+1) Cierra el servidor anterior.
+2) En la carpeta de tu instalacion v5.5, sustituye overlay.html, panel.html y server.py por los archivos del parche v5.6.
+3) Vuelve a iniciar INICIAR_PANEL.bat y abre el panel.
+4) Haz clic en el boton grande "Ocultar HUD" bajo Anterior/Siguiente.
+5) La fuente visual en OBS desaparecera con un fade de 320 ms.
+6) El MISMO boton cambia a "Mostrar HUD" y lo restaura sin perder el juego elegido.
+
+El HUD incluye la marca de canal, la barra del titulo, la linea cronologica,
+los logos de juegos y el marco decorativo de camara.
+El boton NO detiene la musica: la fuente /music funciona por separado.
+Si tu webcam es una fuente de video independiente de OBS, su imagen
+no se ocultara con este boton (solo el marco de camara de este overlay).
+La visibilidad del HUD se reinicia a 'visible' al reiniciar el servidor.
+
+URL OBS visual: http://127.0.0.1:8767/overlay
+URL panel:      http://127.0.0.1:8767/panel
+URL musica:     http://127.0.0.1:8767/music
+
+La v5.6 conserva todas las funciones de v5.5.
+El ZIP no contiene musica con copyright ni canciones precargadas.
+
+Importante: si descargas el ZIP completo en otra carpeta,
+copia tu carpeta 'musica', 'logos' y 'musica_config.json' desde
+la instalacion anterior, si existen, para conservar tus archivos.

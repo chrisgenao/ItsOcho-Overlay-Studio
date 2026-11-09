@@ -1,0 +1,104 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ItsOcho — Audio y graves cinematográficos para OBS</title>
+<style>html,body{margin:0;background:transparent!important;width:1px;height:1px;overflow:hidden}</style></head><body>
+<script>
+'use strict';
+// Audio remains an independent OBS source. The analyser only reports bass
+// intensity to localhost; no copyrighted audio data is uploaded or embedded.
+let active=[],known=null,serial=0,audioContext=null,lastBeatAt=0,lastLevel=0;
+const FADE_IN=.7,FADE_OUT=.5;
+const volume=()=>Math.max(0,Math.min(1,(known?.musicVolume??55)/100));
+const post=(path,body)=>fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).catch(()=>{});
+function fadeAll(){for(const item of active)item.target=0;}
+async function finishIntro(token){await post('/api/intro/finished',{token});}
+function makeAnalyser(element){
+ try{
+  const Ctx=window.AudioContext||window.webkitAudioContext;
+  if(!Ctx)return null;
+  if(!audioContext)audioContext=new Ctx();
+  const source=audioContext.createMediaElementSource(element);
+  const analyser=audioContext.createAnalyser();
+  analyser.fftSize=2048;analyser.smoothingTimeConstant=.44;
+  source.connect(analyser);analyser.connect(audioContext.destination);
+  audioContext.resume().catch(()=>{});
+  return {analyser,fft:new Uint8Array(analyser.frequencyBinCount),baseline:.10};
+ }catch(error){console.warn('Analizador de graves no disponible:',error.message);return null;}
+}
+function stopItem(item){
+ if(item.done)return;
+ item.el.pause();item.el.removeAttribute('src');
+ try{item.el.load()}catch(_){ }
+ item.done=true;
+}
+function playChapter(index,intro=false,token=-1){
+ let mySerial=++serial;fadeAll();
+ if(!known?.musicEnabled)return;
+ fetch('/api/music/status',{cache:'no-store'}).then(r=>r.json()).then(data=>{
+  if(mySerial!==serial||!known?.musicEnabled)return;
+  const track=data.tracks?.[index];
+  if(!track?.ready)return; // El servidor espera 1,8 s para un capítulo sin música.
+  const element=new Audio(`/music/file/${String(index+1).padStart(2,'0')}?v=${encodeURIComponent(track.version)}`);
+  element.preload='auto';element.volume=0;
+  const item={el:element,target:volume(),now:0,expire:performance.now()+known.musicSeconds*1000,
+     analyser:null,index,intro,token,notified:false,done:false};
+  element.addEventListener('ended',()=>{if(intro&&!item.notified){item.notified=true;finishIntro(token)}item.target=0;item.expire=0});
+  element.addEventListener('error',()=>{if(intro&&!item.notified){item.notified=true;finishIntro(token)}item.target=0;item.expire=0});
+  item.analyser=makeAnalyser(element);
+  active.push(item);
+  element.play().then(()=>{audioContext?.resume().catch(()=>{});}).catch(error=>{console.warn('ItsOcho: reproducción automática bloqueada:',error.message);
+    if(intro&&!item.notified){item.notified=true;finishIntro(token)}item.target=0;item.expire=0;});
+ }).catch(()=>{if(intro)finishIntro(token)});
+}
+function takeBass(item){
+ const a=item.analyser;if(!a||audioContext?.state!=='running')return 0;
+ a.analyser.getByteFrequencyData(a.fft);
+ const hz=(audioContext?.sampleRate||48000)/a.analyser.fftSize;
+ const lo=Math.max(1,Math.ceil(36/hz)),hi=Math.min(a.fft.length-1,Math.floor(210/hz));
+ let sum=0,peak=0,n=0;
+ for(let j=lo;j<=hi;j++){let x=a.fft[j]/255;sum+=x;peak=Math.max(peak,x);n++}
+ const energy=n?(sum/n*.67+peak*.33):0;
+ // Adaptive response: a quiet mastering/recording must still animate the logo.
+ a.baseline=a.baseline*.97+energy*.03;
+ const above=Math.max(0,energy-a.baseline*.72);
+ return Math.max(0,Math.min(1,above*3.8+energy*.7));
+}
+setInterval(()=>{
+ const now=performance.now();let bass=0,token=null;
+ for(const item of active){
+  if(item.expire&&now>=item.expire){item.target=0;item.expire=0;
+   if(item.intro&&!item.notified){item.notified=true;finishIntro(item.token)} }
+  item.now+=(item.target-item.now)*.19;
+  if(Math.abs(item.target-item.now)<.003)item.now=item.target;
+  item.el.volume=Math.max(0,Math.min(1,item.now));
+  if(item.intro && !item.el.paused && !item.el.ended && item.target>0 && known?.transitionPhase==='intro' && item.token===known.introToken){
+   bass=Math.max(bass,takeBass(item));token=item.token;
+  }
+  if(item.target===0&&item.now===0)stopItem(item);
+ }
+ active=active.filter(x=>!x.done);
+ if(token!==null&&now-lastBeatAt>=90){lastBeatAt=now;lastLevel=bass;post('/api/beat',{token,level:Math.round(bass*100)/100,playing:true})}
+},40);
+async function poll(){
+ try{
+  const r=await fetch('/api/state',{cache:'no-store'});if(!r.ok)throw Error('offline');
+  const state=await r.json();
+  if(!known){
+    known=state;
+    // When OBS opens this source during an active intro, do not miss its song.
+    if(state.transitionPhase==='intro')playChapter(state.index,true,state.introToken);
+    return;
+  }
+  const changedIntro=state.introToken!==known.introToken && state.transitionPhase==='intro';
+  const replay=state.musicCue!==known.musicCue;
+  const changed=state.index!==known.index;
+  const stop=state.musicStop!==known.musicStop;
+  known=state;
+  if(stop||!state.musicEnabled){++serial;fadeAll()}
+  if(changedIntro)playChapter(state.index,true,state.introToken);
+  else if((changed||replay) && state.transitionPhase==='idle' && state.transitionEnabled===false)playChapter(state.index);
+  else if(replay && state.transitionPhase==='idle')playChapter(state.index);
+  else if(state.transitionPhase==='intro')for(const item of active)if(item.target>0)item.target=volume();
+ }catch(_){++serial;fadeAll()}
+}
+poll();setInterval(poll,140);
+addEventListener('pagehide',()=>{fadeAll();for(const item of active)stopItem(item)});
+</script></body></html>

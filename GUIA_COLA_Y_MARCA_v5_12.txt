@@ -1,0 +1,48 @@
+ITSOCHO TIMELINE v5.12 — COLA DE GTA Y MARCA PERSONALIZADA
+=======================================================
+
+INSTALACIÓN (MÁS SIMPLE: PARCHE)
+1. Cierra INICIAR_PANEL.bat (servidor anterior).
+2. Descomprime el ZIP de PARCHE encima de tu carpeta v5.11.
+3. Reemplaza server.py, panel.html y overlay.html.
+4. Abre INICIAR_PANEL.bat.
+5. En OBS, refresca la caché de tu fuente Navegador del timeline.
+   URL de OBS: http://127.0.0.1:8767/overlay
+   URL del panel: http://127.0.0.1:8767/panel
+   Fuente de sonido (si la tienes): http://127.0.0.1:8767/music
+   NO hace falta reinstalar OBS ni instalar un nuevo módulo Python.
+
+CÓMO CAMBIAR LA COLA
+1. Arriba del panel, abre «Editar juegos y elementos por capítulo».
+2. Usa la casilla principal de cada GTA para incluirlo o excluirlo.
+3. Verás inmediatamente la cola ordenada de más antiguo a más reciente.
+4. Siguiente/Anterior/Primero/Último y los puntos de OBS obedecen esa cola.
+5. El contador muestra posición / cantidad seleccionada, por ejemplo 02 / 07.
+6. Se exige al menos UN juego activado.
+7. Si excluyes el actual, pasa al siguiente activado, o al último previo.
+8. «Todos» habilita los 19; «Solo saga principal» usa 8 capítulos.
+
+TÍTULOS, LOGOS Y NOMBRE DEL DIRECTO
+- Dentro de cada tarjeta de GTA hay dos casillas independientes: Título y Logo.
+- En «Personalizar encabezado y visibilidad general» puedes ocultar todos
+  los títulos o todos los logos, independientemente de los ajustes individuales.
+- Cambia el nombre del canal y el del especial y pulsa «Guardar textos».
+- Las tres casillas de la marca permiten controlar: O con corona (provisional),
+  nombre del canal y subtítulo del especial.
+- Si un juego conserva audio y logo aunque lo desactives, NO se borran.
+  Cuando vuelva a entrar a la cola, reutiliza sus archivos originales.
+
+PERSISTENCIA Y ACTUALIZACIONES
+- La nueva configuración se guarda en timeline_config.json.
+- Para futuras actualizaciones, conserva timeline_config.json,
+  carpeta musica/, musica_config.json, carpeta logos/ y ps5_layout.json.
+- No abras dos servidores con el mismo puerto al mismo tiempo.
+- Si cambias un juego durante una transición y ese juego es el activo,
+  el servidor termina la animación y salta a una selección válida.
+
+SIN CAMBIOS EN:
+- Cámara / OBS WebSocket
+- Marco 16:9 de PS5 y posición
+- HUD toggle, transiciones cinematográficas, bass y sistema de música
+
+NOTA: Cada canción debe ser aportada por ti con autorización de uso en directo.

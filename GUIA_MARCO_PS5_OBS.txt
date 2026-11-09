@@ -1,0 +1,46 @@
+ITSOCHO TIMELINE v5.11 — MARCO PS5 16:9
+=====================================
+
+INSTALACION
+1. Cierra la ventana del servidor del Timeline anterior.
+2. Extrae este ZIP en una carpeta nueva.
+3. Si tienes musica/logos/configuracion anteriores, copia tus carpetas
+   "musica" y "logos", y el archivo "musica_config.json" desde la
+   carpeta de tu version previa, sin sobrescribir los archivos HTML/Python nuevos.
+4. Ejecuta INICIAR_PANEL.bat. El panel esta en http://127.0.0.1:8767/panel
+5. En OBS, la fuente Navegador "Timeline" debe usar:
+   URL: http://127.0.0.1:8767/overlay
+   Tamaño: 1920 x 1080
+
+CONFIGURACION DEL PS5
+- Agrega a OBS una captura de tu PS5, mediante capturadora HDMI o la ventana
+  de PS Remote Play si es la via que utilizas. No viene incluida en este ZIP.
+- Pon la captura PS5 DEBAJO de la fuente Navegador del Timeline en OBS.
+- Usa el panel "PS5 — Descarga en directo (16:9)".
+- El marco arranca OCULTO y separado de la camara (4:3).
+- Su posicion inicial: X=1345, Y=130, ANCHO=520, ALTO=293 (16:9).
+- Acomoda o recorta la captura real PS5 en OBS para que ocupe ese rectangulo.
+  El fondo del marco es totalmente transparente.
+- Puedes elegir una esquina o introducir tus propias coordenadas X/Y y ancho
+  desde el panel. Pulsa "Guardar posicion y tamaño" para conservar los cambios.
+- Usa "Mostrar PS5" y "Ocultar PS5" para cambiar solo el marco.
+
+CONTROL DE LA CAPTURA PS5 DESDE EL MISMO BOTON
+1. En OBS: Herramientas > Ajustes del servidor WebSocket. Activalo.
+2. En el panel ItsOcho, conecta al WebSocket (por defecto puerto 4455).
+3. Pulsa "Actualizar fuentes", y en el bloque PS5 elige tu captura REAL.
+4. Mantén seleccionada "Mostrar/ocultar también esa fuente de OBS".
+5. El boton PS5 ahora activa o desactiva el MARCO y la CAPTURA a la vez.
+   El mismo origen se controla en cualquier escena/grupo donde se encuentre.
+6. Si OBS no esta conectado y hay una fuente vinculada, el panel muestra
+   un error y no cambia a medias. Para usar solo el marco, borra la seleccion
+   de la fuente PS5 o desmarca su casilla de sincronizacion.
+
+IMPORTANTE
+- El marco PS5 NO captura imagen por su cuenta: requiere una fuente real OBS.
+- El boton HUD global puede ocultar el marco visual, pero la captura real
+  independiente se controla desde el boton PS5 cuando esta vinculada a OBS.
+- El modo Cinematic/compuertas oculta temporalmente el marco, sin alterar
+  el estado de visibilidad de la captura PS5 vinculada.
+- Solo se guarda nombre de la fuente y puerto, NUNCA tu contraseña de OBS.
+- No se han cambiado los controles de musica, camara, logos y timeline.

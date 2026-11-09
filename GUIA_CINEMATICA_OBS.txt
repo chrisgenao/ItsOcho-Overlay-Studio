@@ -1,0 +1,57 @@
+ITSOCHO — THE ROAD TO GTA VI | TIMELINE v5.7 CINEMATIC
+======================================================
+
+QUÉ HACE
+- En la primera apertura del overlay aparece el logo del GTA actual sobre
+  dos compuertas cerradas. Si hay una canción asignada, se reproduce su
+  fragmento y el logo reacciona a las frecuencias graves detectadas.
+- Al terminar el fragmento (o al superar el máximo de segundos), la compuerta
+  se abre a izquierda/derecha, revelando la escena debajo.
+- Aparecen progresivamente: marca del canal, tarjeta del capítulo, línea
+  temporal y, si estaba habilitado, marco de cámara.
+- Al tocar Siguiente, Anterior o un juego del catálogo, el HUD desaparece
+  elemento por elemento; las compuertas se cierran con el logo del destino;
+  el tema del nuevo GTA suena con el logo animado; se abren y regresa el HUD.
+- Si no se ha asignado canción al juego, muestra el logo 1.8 segundos en
+  silencio y continúa automáticamente.
+
+INSTALACIÓN
+1) Cierra el servidor antiguo (Ctrl+C) y descomprime el ZIP ENTERO en una
+   carpeta nueva. Si tienes música/logos personalizados de v5.6, COPIA las
+   carpetas 'musica' y 'logos' y, si existe, 'musica_config.json' a la nueva.
+2) Ejecuta INICIAR_PANEL.bat (Python 3.10+; no requiere pip).
+3) OBS > Fuente Navegador visual: http://127.0.0.1:8767/overlay
+   Resolución: 1920×1080. Transparencia habilitada.
+4) OBS > otra Fuente Navegador audio: http://127.0.0.1:8767/music
+   Dimensiones: 1×1. Marca "Controlar audio mediante OBS".
+   Mantén la fuente ACTIVA/visible. Desactiva la monitorización si se duplica.
+   IMPORTANTE: el overlay NO reproduce audio; /music es el reproductor.
+5) Abre http://127.0.0.1:8767/panel en tu navegador para manejar los capítulos.
+
+BOTONES DEL PANEL
+- Siguiente/Anterior/Saltar a un capítulo: transición completa, no corte.
+- Presentar juego actual: repite la secuencia del capítulo actual.
+- Saltar animación: corta la secuencia inmediatamente y deja el capítulo listo.
+- Transiciones activadas/desactivadas: permite volver al modo v5.6 clásico.
+- Ocultar HUD/Mostrar HUD: oculta TODO lo visual, independiente de la música.
+- Música > Elegir audio: carga tus archivos permitidos (MP3, WAV, ...).
+- Máximo de segundos por presentación: fragmento máximo de 3–120 s. Si el
+  archivo termina antes, la secuencia avanza inmediatamente.
+
+IMPORTANTE: LOS TEMAS NO VIENEN INCLUIDOS.
+Carga exclusivamente pistas para las que tengas derecho de reproducción pública.
+Los logos se intentan obtener al iniciar; puedes subir manualmente los que
+falten desde el panel. GTA VI (19.png) viene guardado en el ZIP.
+
+QUÉ SUCEDE SI EL AUDIO NO ESTÁ LISTO
+El servidor controla los tiempos, así que la transición no se queda bloqueada
+si OBS reinicia la fuente musical; vuelve al HUD tras la duración establecida.
+Si no funciona el rebote, revisa que la fuente /music esté activa y reproduzca
+el audio; Chrome/CEF necesita permitir reproducción automática y Web Audio.
+
+DIAGNÓSTICO
+- Si el panel o logo no responde, cierra todos los servidores anteriores y
+  vuelve a ejecutar el BAT. Puerto exclusivo: 8767.
+- Si OBS muestra caché antigua, abre Propiedades de la fuente > Actualizar
+  caché de la página actual.
+- No agregues DOS fuentes /music porque duplicarías el sonido.

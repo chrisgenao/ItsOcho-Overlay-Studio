@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ItsOcho — The Road to GTA VI — Timeline v5.12 · Cola configurable</title>
+<style>
+:root{--accent:#ffcb69;--accent2:#ff967d;--text:#f8f9ff;--muted:#b1b8cf}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:transparent;overflow:hidden}
+body{font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--text);-webkit-user-select:none;user-select:none}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;transform-origin:top left}
+body.preview #stage{background:linear-gradient(125deg,#173445,#242136 45%,#141b33)}
+/* HUD master toggle: fades every visual layer as one unit; music is a separate OBS source. */
+#stage{transition:opacity .32s cubic-bezier(.22,1,.36,1)}
+#stage.hud-hidden{opacity:0;pointer-events:none}
+#stage.hud-hidden *{pointer-events:none}
+/* SMALL unobtrusive channel credit, no top frame. */
+.brand{position:absolute;top:30px;left:52px;display:flex;gap:12px;align-items:center;opacity:.83;filter:drop-shadow(0 2px 7px #0007);transition:opacity .45s,transform .45s}
+.brand-mark{position:relative;font-weight:1000;font-size:32px;line-height:1;letter-spacing:-3px;font-style:italic;transform:rotate(-12deg);color:white;text-shadow:2px 2px #0b0b1b}
+.brand-mark:before{content:'♛';position:absolute;left:7px;top:-11px;color:var(--accent);font-size:15px;transform:rotate(1deg)}
+.brand-text{font-weight:750;font-size:12px;letter-spacing:2.9px;color:#ebecf6;text-shadow:0 2px 5px #000}
+#brand-subtitle{color:var(--accent);font-weight:900}
+.brand[hidden],.brand [hidden]{display:none!important}
+.titles-off .game-title{display:none}
+.chapter-labels-off .era,.chapter-labels-off .game-note{display:none}
+
+/* The entire lower-third stays within a small, controlled footprint. */
+.chapter{position:absolute;left:52px;bottom:70px;width:950px;height:74px;
+  display:flex;align-items:stretch;overflow:hidden;border:1px solid #ffffff27;border-radius:11px;
+  background:linear-gradient(90deg,rgba(8,11,24,.94),rgba(9,13,30,.87) 68%,rgba(13,17,37,.72));
+  box-shadow:0 8px 26px #0007,0 0 0 1px #0004;
+  transition:height .55s cubic-bezier(.22,1,.36,1),width .55s cubic-bezier(.22,1,.36,1),background .4s,transform .55s cubic-bezier(.22,1,.36,1),opacity .35s;
+  will-change:height,transform;opacity:0;transform:translate3d(-18px,20px,0);}
+.chapter.visible{opacity:1;transform:translateZ(0)}
+.chapter:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);box-shadow:0 0 15px var(--accent);z-index:2}
+.chapter:after{content:'';position:absolute;top:0;left:-36%;width:30%;height:100%;pointer-events:none;
+  background:linear-gradient(90deg,transparent,#ffffff16,transparent);transform:skewX(-21deg);opacity:0}
+.chapter.switch-in:after{animation:lightSweep 1s cubic-bezier(.12,.81,.25,1) both}
+.year-column{flex:0 0 146px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:4px 22px 4px 26px;
+  background:linear-gradient(100deg,rgba(255,255,255,.075),rgba(255,255,255,.007));border-right:1px solid #ffffff21}
+.chapter-year{font-size:34px;line-height:1.1;font-weight:950;letter-spacing:-.9px;font-variant-numeric:tabular-nums;color:var(--accent);transition:color .3s}
+.chapter-count{font-size:10px;letter-spacing:2.2px;font-weight:900;color:#c2c8da;margin-top:4px}
+.chapter-body{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:8px 25px;overflow:hidden;gap:2px}
+.era{font-weight:850;color:var(--accent);font-size:10px;line-height:14px;letter-spacing:2.5px;text-transform:uppercase;white-space:nowrap}
+.game-title{font-size:27px;line-height:1.16;font-weight:920;letter-spacing:-.45px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}
+.game-note{color:#c7cede;font-size:14px;line-height:1.4;font-weight:550;max-height:0;opacity:0;transform:translateY(-8px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:max-height .5s cubic-bezier(.22,1,.36,1),opacity .3s,transform .5s}
+.chapter.expanded{height:112px}
+.chapter.expanded .game-note{max-height:27px;opacity:1;transform:translateY(0)}
+.chapter.switch-in .chapter-year{animation:yearPulse .78s cubic-bezier(.24,.8,.26,1) both}
+.chapter.switch-in .chapter-body{animation:contentReveal .65s cubic-bezier(.16,1,.3,1) both}
+
+/* Official per-game logo, INSIDE the existing 74px bar; zero extra screen area. */
+.game-logo{flex:0 0 174px;min-width:0;height:100%;position:relative;display:flex;align-items:center;justify-content:center;padding:5px 14px 5px 10px;overflow:hidden;transition:opacity .35s,width .4s,flex-basis .4s}
+.game-logo:before{content:'';position:absolute;left:1px;top:19%;bottom:19%;width:1px;background:linear-gradient(transparent,#ffffff2c,transparent)}
+.game-logo img{display:block;width:100%;max-width:154px;height:100%;max-height:60px;object-fit:contain;object-position:center;opacity:0;transform:translateX(10px) scale(.9);filter:drop-shadow(0 2px 3px #0009);transition:opacity .38s ease,transform .56s cubic-bezier(.16,1,.3,1)}
+.game-logo.loaded img{opacity:1;transform:translateX(0) scale(1)}
+.chapter.logo-missing .game-logo,.logos-off .game-logo{display:none}
+.cinema .game-logo{flex-basis:102px;padding:5px 11px}
+.cinema .game-logo img{max-width:90px;max-height:36px}
+.cinema .game-logo:before{top:23%;bottom:23%}
+/* Very discreet timeline: a narrow 2px line with tiny chapter dots. */
+.timeline{position:absolute;left:52px;bottom:33px;width:950px;height:14px;transition:opacity .32s,transform .32s}
+.track{position:absolute;left:8px;right:8px;top:6px;height:2px;border-radius:10px;background:#858ca45c}
+.complete{height:100%;width:0;background:linear-gradient(90deg,#69dbe7,#e28ac7,var(--accent));border-radius:10px;transition:width .72s cubic-bezier(.22,1,.36,1);box-shadow:0 0 9px var(--accent)}
+.nodes{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between}
+.node{width:15px;height:15px;display:grid;place-items:center;position:relative;cursor:default}
+.node:before{content:'';width:5px;height:5px;background:#515b74;border-radius:50%;border:1px solid #acb3ca;transition:background .35s,transform .35s,box-shadow .35s}
+.node.done:before{background:#a2b8d8;border-color:#a2b8d8}
+.node.active:before{background:var(--accent);border-color:#fff;transform:scale(1.9);box-shadow:0 0 0 3px #fff2,0 0 10px var(--accent)}
+/* Optional 4:3 webcam border, disabled by default to keep trailers clear. */
+.cam{position:absolute;left:1588px;top:799px;width:280px;height:210px;opacity:1;transition:opacity .35s,transform .35s;filter:drop-shadow(0 5px 12px #0007)}
+/* v5.4: two independent roaming neon arcs, following the complete rounded 4:3 camera perimeter. */
+.cam-frame{position:absolute;inset:0;border:1.5px solid #c7cce1a3;border-radius:10px;
+  box-shadow:inset 0 0 0 1px #ffffff14,0 0 0 3px #080c20aa;overflow:visible}
+.cam-neon{position:absolute;inset:-2px;width:calc(100% + 4px);height:calc(100% + 4px);pointer-events:none;overflow:visible}
+.cam-neon rect{fill:none;stroke-width:3.25;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:76 924;vector-effect:non-scaling-stroke;will-change:stroke-dashoffset}
+.cam-neon .neon-pink{stroke:#ff5aaa;filter:drop-shadow(0 0 2.5px #ff4ea9) drop-shadow(0 0 5px #ff4ea9);
+  animation:neonPinkOrbit 5.8s linear infinite}
+.cam-neon .neon-cyan{stroke:#52edff;filter:drop-shadow(0 0 2.5px #35eaff) drop-shadow(0 0 5px #35eaff);
+  animation:neonCyanOrbit 5.8s linear infinite}
+/* Each dash is 7.6% of the perimeter. The cyan stays halfway around from pink. */
+@keyframes neonPinkOrbit{from{stroke-dashoffset:0}to{stroke-dashoffset:-1000}}
+@keyframes neonCyanOrbit{from{stroke-dashoffset:-500}to{stroke-dashoffset:-1500}}
+.cam-off .cam{opacity:0;transform:translateY(12px)}
+/* v5.11 · Independent 16:9 PS5 capture frame (transparent interior). */
+.ps5-capture{position:absolute;left:1345px;top:130px;width:520px;aspect-ratio:16/9;pointer-events:none;
+ opacity:0;transform:translateY(10px) scale(.985);transform-origin:center;
+ transition:opacity .42s ease,transform .5s cubic-bezier(.22,1,.36,1);
+ filter:drop-shadow(0 6px 18px #090c21a6)}
+.ps5-capture.ps5-visible{opacity:1;transform:none}
+.ps5-rim{position:absolute;inset:0;border:2px solid #b9c0dbaf;border-radius:12px;
+ box-shadow:0 0 0 3px #080c21bc,inset 0 0 0 1px #ffffff12;overflow:visible}
+.ps5-rim svg{position:absolute;inset:-2px;width:calc(100% + 4px);height:calc(100% + 4px);overflow:visible}
+.ps5-rim rect{fill:none;stroke-width:3.5;stroke-linecap:round;vector-effect:non-scaling-stroke;
+ stroke-dasharray:85 915}
+.ps5-rim .pink{stroke:#ff5aaa;filter:drop-shadow(0 0 3px #ff5aaa) drop-shadow(0 0 7px #ff5aaa);
+ animation:neonPinkOrbit 6.4s linear infinite}
+.ps5-rim .cyan{stroke:#52edff;filter:drop-shadow(0 0 3px #52edff) drop-shadow(0 0 7px #52edff);
+ animation:neonCyanOrbit 6.4s linear infinite}
+.ps5-caption{position:absolute;left:14px;top:-30px;color:#f9fbff;background:#0b1229ee;border:1px solid #4f668e;
+ font-size:11px;letter-spacing:1.55px;font-weight:900;padding:6px 12px;border-radius:7px;
+ text-shadow:0 1px 5px #000a;box-shadow:0 3px 15px #0008}
+/* Hide this frame during the full-screen cinematic; keep the PS5 toggle independently stored. */
+#stage.loading .ps5-capture,#stage.phase-hud-out .ps5-capture,
+#stage.phase-door-close .ps5-capture,#stage.phase-intro .ps5-capture,
+#stage.phase-door-open .ps5-capture{opacity:0!important}
+#stage.phase-hud-in .ps5-capture.ps5-visible{animation:ps5Reveal .6s .7s both}
+@keyframes ps5Reveal{from{opacity:0;transform:translateY(15px) scale(.985)}to{opacity:1;transform:none}}
+
+.tl-hidden .timeline{opacity:0;transform:translateY(7px)}
+
+/* Cinema mode: only a thin name pill, virtually the entire trailer stays visible. */
+.cinema .brand{opacity:0;transform:translateY(-10px)}
+.cinema .chapter{width:670px;height:49px;bottom:55px;background:linear-gradient(90deg,#080b1ae8,#111528b9);border-radius:9px}
+.cinema .year-column{flex-basis:108px;padding:4px 18px 4px 18px}
+.cinema .chapter-year{font-size:23px}
+.cinema .chapter-count,.cinema .era,.cinema .game-note{display:none}
+.cinema .chapter-body{padding:7px 18px}
+.cinema .game-title{font-size:19px}
+.cinema .chapter.expanded{height:49px}
+.cinema .timeline{width:670px;bottom:31px;opacity:.75}
+.cinema .cam{opacity:0;pointer-events:none}
+.cinema.tl-hidden .timeline{opacity:0}
+
+/* Preview helper only; never appears as a background in OBS. */
+body.preview:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(105deg,transparent 0 50px,#ffffff05 51px,transparent 52px)}
+@keyframes lightSweep{0%{left:-36%;opacity:0}12%{opacity:1}100%{left:130%;opacity:0}}
+@keyframes yearPulse{0%{opacity:.3;filter:blur(6px);transform:translateY(10px)}100%{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes contentReveal{from{opacity:0;filter:blur(5px);transform:translateY(9px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition-duration:.001ms!important}}
+
+/* ═══ v5.7: cinematic doors, separate from the compact in-game HUD ═══ */
+#stage.loading .brand,#stage.loading .chapter,#stage.loading .timeline,#stage.loading .cam{opacity:0!important}
+#stage .brand,#stage .chapter,#stage .timeline,#stage .cam{transition-property:opacity,transform,height,width,background;}
+#stage.phase-hud-out .cam{opacity:0!important;transform:translateY(18px);transition-delay:0s!important}
+#stage.phase-hud-out .timeline{opacity:0!important;transform:translateY(13px);transition-delay:.12s!important}
+#stage.phase-hud-out .chapter{opacity:0!important;transform:translate(-20px,15px);transition-delay:.23s!important}
+#stage.phase-hud-out .brand{opacity:0!important;transform:translateY(-12px);transition-delay:.36s!important}
+#stage.phase-door-close .brand,#stage.phase-door-close .chapter,#stage.phase-door-close .timeline,#stage.phase-door-close .cam,
+#stage.phase-intro .brand,#stage.phase-intro .chapter,#stage.phase-intro .timeline,#stage.phase-intro .cam,
+#stage.phase-door-open .brand,#stage.phase-door-open .chapter,#stage.phase-door-open .timeline,#stage.phase-door-open .cam{
+ opacity:0!important;pointer-events:none!important;transition-delay:0s!important}
+#stage.phase-hud-in .brand{animation:cinBrand .45s .08s both!important}
+#stage.phase-hud-in .chapter{animation:cinChapter .58s .23s both!important}
+#stage.phase-hud-in .timeline:not(.tl-hidden){animation:cinTimeline .50s .43s both!important}
+#stage.phase-hud-in:not(.cam-off):not(.cinema) .cam{animation:cinChapter .50s .62s both!important}
+@keyframes cinBrand{from{opacity:0;transform:translateY(-14px)}to{opacity:.83;transform:none}}
+@keyframes cinChapter{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes cinTimeline{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+/* Fullscreen, physically split in half. When open both doors leave OBS transparent. */
+#cinematic-gate{position:absolute;inset:0;pointer-events:none;z-index:20;visibility:hidden;--beat-scale:1;--beat-glow:.35}
+#stage.phase-door-close #cinematic-gate,#stage.phase-intro #cinematic-gate,#stage.phase-door-open #cinematic-gate{visibility:visible}
+.gate-half{position:absolute;top:0;width:50%;height:100%;overflow:hidden;will-change:transform;
+ transition:transform .92s cubic-bezier(.67,.02,.15,1);}
+.gate-half.left{left:0;transform:translateX(-101%)}
+.gate-half.right{right:0;transform:translateX(101%)}
+#stage.phase-door-close .gate-half,#stage.phase-intro .gate-half{transform:translateX(0)}
+#stage.phase-door-open .gate-half{transition-duration:1.02s}
+.gate-background{position:absolute;top:0;width:1920px;height:1080px;
+ background:radial-gradient(ellipse 75% 70% at 50% 59%,#263959 0%,#171c36 44%,#090d21 78%,#070817 100%)}
+.gate-half.left .gate-background{left:0}
+.gate-half.right .gate-background{left:-960px}
+.gate-background:before{content:'';position:absolute;inset:0;
+ background:radial-gradient(ellipse 36% 55% at 19% 80%,#fa4b9840,transparent 77%),radial-gradient(ellipse 35% 48% at 82% 20%,#43dfee32,transparent 80%),
+ linear-gradient(145deg,transparent 44%,#f9a2c010 47%,transparent 50%),repeating-linear-gradient(0deg,#ffffff05 0px,#ffffff05 1px,transparent 1px,transparent 7px);}
+.gate-background:after{content:'';position:absolute;top:60%;left:0;width:100%;height:40%;opacity:.32;
+ background:linear-gradient(transparent,#080b1a 75%),repeating-linear-gradient(90deg,transparent 0 110px,#69e6ee35 112px,transparent 114px),linear-gradient(0deg,#ff83b70a,transparent)}
+.gate-center-copy{position:absolute;top:0;width:1920px;height:1080px;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.gate-half.left .gate-center-copy{left:0}.gate-half.right .gate-center-copy{left:-960px}
+.gate-logo{width:660px;height:475px;display:flex;align-items:center;justify-content:center;position:relative;
+ transform:translate3d(0,var(--beat-y,0px),0) scale(var(--beat-scale));transform-origin:center;will-change:transform;filter:drop-shadow(0 18px 16px #07061a70)
+ drop-shadow(0 0 calc(var(--beat-glow) * 26px) #f985b861);}
+.gate-logo:before{content:'';position:absolute;width:78%;height:72%;border-radius:50%;filter:blur(72px);
+ background:radial-gradient(ellipse,#fb6d9760 0%,#47dbed1e 45%,transparent 70%);z-index:-1}
+.gate-logo img{width:100%;height:100%;max-width:620px;max-height:440px;object-fit:contain;filter:drop-shadow(0 11px 17px #050713a1)}
+.gate-logo .gate-text{font-weight:950;font-size:73px;text-align:center;text-transform:uppercase;letter-spacing:-2px;line-height:1.1;
+ text-shadow:0 5px 0 #150e2b,0 10px 35px #ff75c391;padding:45px}
+.gate-caption{position:absolute;top:78%;text-transform:uppercase;font-size:17px;font-weight:850;letter-spacing:6px;
+ color:#edebffbd;text-shadow:0 4px 25px #000b}
+/* v5.8: removed the former pink/cyan seam strokes and bottom trace.
+   Doors close flush and open to clean transparency, without any bars. */
+/* v5.9: First layer ALWAYS bounces through the entire intro, even without
+   an analyser. An independent inner layer amplifies true low-frequency energy.
+   Having two layers avoids CSS keyframes overriding a JS transform. */
+.gate-logo{transform:none;filter:drop-shadow(0 18px 16px #07061a70);}
+.gate-logo-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+ position:relative;transform:translate3d(0,0,0) scale(1);transform-origin:center;
+ will-change:transform;}
+.gate-logo-inner img{width:100%;height:100%;max-width:620px;max-height:440px;object-fit:contain;
+ filter:drop-shadow(0 11px 17px #050713a1)}
+#stage.phase-intro .gate-logo{animation:constantGroove .49s linear infinite;
+ filter:drop-shadow(0 18px 16px #07061a70) drop-shadow(0 0 20px #f985b83f)}
+/* clearly visible kick / rebound pattern at 122 BPM, not a tiny floating effect */
+@keyframes constantGroove{
+ 0%,100%{transform:translate3d(0,3px,0) scale(1)}
+ 12%{transform:translate3d(0,-27px,0) scale(1.145)}
+ 32%{transform:translate3d(0,-7px,0) scale(1.055)}
+ 53%{transform:translate3d(0,3px,0) scale(.994)}
+ 65%{transform:translate3d(0,-11px,0) scale(1.07)}
+ 83%{transform:translate3d(0,1px,0) scale(1.01)}
+}
+#stage.hud-hidden #cinematic-gate{visibility:hidden!important}
+@media(prefers-reduced-motion:reduce){.gate-half{transition-duration:.15s!important}#stage.phase-intro .gate-logo{animation:none}}
+
+</style></head>
+<body><div id="stage" class="cam-off loading">
+  <div class="brand"><div class="brand-mark">O</div><div class="brand-text"><span class="brand-name" id="brand-name">ITSOCHO</span> <span id="brand-subtitle">· THE ROAD TO GTA VI</span></div></div>
+  <section class="chapter logo-missing" id="chapter" aria-live="polite">
+    <div class="year-column"><div id="chapter-year" class="chapter-year">1997</div><div id="chapter-count" class="chapter-count">01 / 19</div></div>
+    <div class="chapter-body"><div id="era" class="era">LOS ORÍGENES</div><div id="game-title" class="game-title">GRAND THEFT AUTO</div><div id="game-note" class="game-note">El comienzo de la saga.</div></div>
+    <div id="game-logo" class="game-logo" aria-hidden="true"><img id="logo-image" alt="" draggable="false"></div>
+  </section>
+  <div class="cam" aria-hidden="true"><div class="cam-frame">
+    <svg class="cam-neon" viewBox="0 0 280 210" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+      <rect class="neon-pink" x="1.75" y="1.75" width="276.5" height="206.5" rx="10" ry="10" pathLength="1000" />
+      <rect class="neon-cyan" x="1.75" y="1.75" width="276.5" height="206.5" rx="10" ry="10" pathLength="1000" />
+    </svg>
+  </div></div>
+
+  <!-- PS5 download capture goes UNDER this Browser Source in OBS; the middle is 100% transparent. -->
+  <div id="ps5-capture" class="ps5-capture" aria-hidden="true">
+    <div class="ps5-rim"><svg viewBox="0 0 520 292.5" preserveAspectRatio="none" aria-hidden="true">
+      <rect class="pink" x="2" y="2" width="516" height="288.5" rx="12" ry="12" pathLength="1000"/>
+      <rect class="cyan" x="2" y="2" width="516" height="288.5" rx="12" ry="12" pathLength="1000"/>
+    </svg></div>
+    <div class="ps5-caption">PS5 · DOWNLOAD</div>
+  </div>
+
+  <!-- Fullscreen cinematic: two independent sliding halves with a split chapter logo. -->
+  <div id="cinematic-gate" aria-hidden="true">
+    <div class="gate-half left"><div class="gate-background"></div><div class="gate-center-copy"><div class="gate-logo"><div class="gate-logo-inner"><img class="gate-logo-img" alt=""/><span class="gate-text" hidden></span></div></div><div class="gate-caption"></div></div></div>
+    <div class="gate-half right"><div class="gate-background"></div><div class="gate-center-copy"><div class="gate-logo"><div class="gate-logo-inner"><img class="gate-logo-img" alt=""/><span class="gate-text" hidden></span></div></div><div class="gate-caption"></div></div></div>
+  </div>
+  <div class="timeline" id="timeline" aria-hidden="true"><div class="track"><div class="complete" id="complete"></div></div><div class="nodes" id="nodes"></div></div>
+</div>
+<script>
+'use strict';
+/* Timeline data preserved from v3.2, including the 19 releases. */
+const games = [
+  {year:1997,title:'Grand Theft Auto',era:'Los orígenes',note:'DMA Design, vista cenital y el nacimiento de una saga.',palette:['#ffcb69','#ff967d']},
+  {year:1999,title:'GTA: London 1969 / 1961',era:'Los orígenes',note:'Dos expansiones que llevaron la fórmula original a Londres.',palette:['#ffcb69','#ff967d']},
+  {year:1999,title:'Grand Theft Auto 2',era:'Los orígenes',note:'Bandas, reputación y una ciudad con estilo retrofuturista.',palette:['#ffcb69','#ff967d']},
+  {year:2001,title:'Grand Theft Auto III',era:'La revolución 3D',note:'Liberty City cambia para siempre la idea de mundo abierto.',palette:['#f98ab6','#dc74ff']},
+  {year:2002,title:'GTA: Vice City',era:'La revolución 3D',note:'Tommy Vercetti, neones, música y el espíritu de los ochenta.',palette:['#f98ab6','#dc74ff']},
+  {year:2004,title:'GTA: San Andreas',era:'La revolución 3D',note:'CJ, tres ciudades y un mundo repleto de posibilidades.',palette:['#f98ab6','#dc74ff']},
+  {year:2004,title:'Grand Theft Auto Advance',era:'Historias paralelas',note:'Una aventura portátil ambientada en Liberty City.',palette:['#bd92fa','#ff91c7']},
+  {year:2005,title:'Liberty City Stories',era:'Historias paralelas',note:'Toni Cipriani y una precuela de los sucesos de GTA III.',palette:['#bd92fa','#ff91c7']},
+  {year:2006,title:'Vice City Stories',era:'Historias paralelas',note:'Victor Vance y el regreso a Vice City, esta vez en 1984.',palette:['#bd92fa','#ff91c7']},
+  {year:2008,title:'Grand Theft Auto IV',era:'El universo HD',note:'Niko Bellic, una Liberty City renovada y un tono más realista.',palette:['#78b7ff','#70e2df']},
+  {year:2009,title:'The Lost and Damned',era:'El universo HD',note:'Johnny Klebitz y una nueva perspectiva sobre Liberty City.',palette:['#78b7ff','#70e2df']},
+  {year:2009,title:'GTA: Chinatown Wars',era:'El universo HD',note:'Huang Lee y una original aventura para consolas portátiles.',palette:['#78b7ff','#70e2df']},
+  {year:2009,title:'The Ballad of Gay Tony',era:'El universo HD',note:'Luis Lopez y el lado más espectacular de la vida nocturna.',palette:['#78b7ff','#70e2df']},
+  {year:2013,title:'Grand Theft Auto V',era:'Los Santos',note:'Michael, Franklin y Trevor: tres protagonistas, una gran ciudad.',palette:['#5ae0d3','#71c7f1']},
+  {year:2013,title:'GTA Online',era:'Los Santos',note:'La comunidad transforma Los Santos en un mundo persistente.',palette:['#5ae0d3','#71c7f1']},
+  {year:2021,title:'The Trilogy — Definitive Edition',era:'Nuevas ediciones',note:'GTA III, Vice City y San Andreas regresan en una colección.',palette:['#5ae0d3','#71c7f1']},
+  {year:2022,title:'GTA V / Online — PS5',era:'Nuevas ediciones',note:'El salto de Los Santos a las consolas de nueva generación.',palette:['#5ae0d3','#71c7f1']},
+  {year:2025,title:'GTA V Enhanced — PC',era:'Nuevas ediciones',note:'Una edición de PC con mejoras gráficas y de rendimiento.',palette:['#5ae0d3','#71c7f1']},
+  {year:2026,title:'Grand Theft Auto VI',era:'El próximo capítulo',note:'Lucia, Jason y el regreso al estado de Leonida.',palette:['#ff83ba','#ffb875']}
+];
+const $=id=>document.getElementById(id);
+const q=new URLSearchParams(location.search);
+let current=0,camera=false,timeline=true,cinema=false,logos=true;
+let selected=[...games.keys()],showChapterTitle=true,showChapterLogo=true;
+let previousRevision=-1,previousFlash=-1,detailsTimeout=null;
+let visualPhase='idle',introLogoIndex=-1,gateLogoIndex=-1,beat=0,beatTarget=0,lastServerState=null;
+let lastBassUpdate=0, haveLiveBass=false;
+if(q.get('preview')==='1')document.body.classList.add('preview');
+const start=Number(q.get('game'));
+if(Number.isInteger(start)&&start>=1&&start<=games.length)current=start-1;
+const nodes=$('nodes');
+let logoRequested=-1, logoLoadedFor=-1, logoRevision='', logoVersion='';
+const logoImg=$('logo-image');
+function requestLogo(i,force=false){
+  if(!showChapterLogo) return;
+  if(i===logoRequested && !force)return;
+  logoRequested=i;
+  const chapter=$('chapter');
+  chapter.classList.add('logo-missing');
+  $('game-logo').classList.remove('loaded');
+  logoImg.onload=()=>{
+    if(i!==current||!showChapterLogo)return;
+    logoLoadedFor=i;
+    chapter.classList.remove('logo-missing');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>$('game-logo').classList.add('loaded')));
+  };
+  logoImg.onerror=()=>{if(i===current){logoLoadedFor=-1;chapter.classList.add('logo-missing')}};
+  logoImg.src=`/logos/${String(i+1).padStart(2,'0')}?v=${logoRevision}`;
+}
+async function pollLogos(){
+  try{
+    const r=await fetch('/api/logos/status',{cache:'no-store'});
+    if(!r.ok)return;
+    const info=await r.json();
+    if(!logos)return;
+    const ready=showChapterLogo&&info.ready&&info.ready[current];
+    const version=info.versions?.[current] || String(info.revision);
+    if(ready&&((logoLoadedFor!==current)||(logoVersion!==version))){
+      logoVersion=version;logoRevision=version;
+      requestLogo(current,true);
+    }
+  }catch(_){}
+}
+setInterval(pollLogos,1200);
+
+function rebuildNodes(queue){
+ nodes.replaceChildren();
+ for(const i of queue){
+  const n=document.createElement('span');n.className='node';n.title=`${games[i].year} — ${games[i].title}`;
+  nodes.appendChild(n);
+ }
+}
+rebuildNodes(selected);
+function revealDetails(ms=4800){
+  clearTimeout(detailsTimeout);
+  $('chapter').classList.add('expanded');
+  detailsTimeout=setTimeout(()=>$('chapter').classList.remove('expanded'),ms);
+}
+
+function setGateLogo(index,allowLogo=true,allowTitle=true){
+ const signature=`${index}-${allowLogo}-${allowTitle}`;
+ if(signature===gateLogoIndex)return;
+ gateLogoIndex=signature;
+ for(const copy of document.querySelectorAll('.gate-center-copy')){
+  copy.querySelector('.gate-caption').textContent=allowTitle?`${games[index].year} · ${games[index].title}`:'';
+  const img=copy.querySelector('img');const text=copy.querySelector('.gate-text');
+  img.hidden=!allowLogo;text.hidden=true; text.textContent=games[index].title;
+  if(!allowLogo){text.hidden=!allowTitle;continue}
+  img.onload=()=>{img.hidden=false;text.hidden=true};
+  img.onerror=()=>{img.hidden=true;text.hidden=!allowTitle};
+  img.src=`/logos/${String(index+1).padStart(2,'0')}?v=${Date.now()}`;
+ }
+}
+function setPhase(s){
+ const phase=s.transitionPhase||'idle';
+ const classPhase=phase.replaceAll('_','-');
+ const target=Number.isInteger(s.transitionTarget)?s.transitionTarget:s.index;
+ const allowLogo=s.logos!==false && (s.gameLogos?.[target]!==false);
+ const allowTitle=s.titleVisible!==false && (s.gameTitles?.[target]!==false);
+ setGateLogo(target,allowLogo,allowTitle);
+ if(phase!==visualPhase){
+  $('stage').classList.remove('phase-'+visualPhase.replaceAll('_','-'));
+  $('stage').classList.add('phase-'+classPhase);
+  visualPhase=phase;
+ }
+ beatTarget=phase==='intro'?Math.max(0,Math.min(1,s.beatLevel||0)):0;
+ haveLiveBass=!!s.beatLive;
+ if(haveLiveBass)lastBassUpdate=performance.now();
+ $('stage').classList.remove('loading');
+}
+function animateBass(now){
+ // CSS owns the constant, full-time bounce. We apply only LIVE audio gain to
+ // an inner wrapper, so no other animation can override it.
+ const introducing=visualPhase==='intro';
+ const live=introducing&&haveLiveBass&&(now-lastBassUpdate<750);
+ const target=live?Math.max(0,Math.min(1,beatTarget)):0;
+ beat+=(target-beat)*(target>beat?.52:.13);
+ const extraScale=1+Math.min(.22,beat*.20);
+ const extraLift=-Math.min(25,beat*25);
+ const transform=`translate3d(0,${extraLift.toFixed(1)}px,0) scale(${extraScale.toFixed(3)})`;
+ for(const inner of document.querySelectorAll('.gate-logo-inner'))inner.style.transform=transform;
+ requestAnimationFrame(animateBass);
+}
+requestAnimationFrame(animateBass);
+function show(i,animate=true){
+  current=Math.max(0,Math.min(games.length-1,i));
+  const g=games[current];
+  document.documentElement.style.setProperty('--accent',g.palette[0]);
+  document.documentElement.style.setProperty('--accent2',g.palette[1]);
+  $('chapter-year').textContent=String(g.year);
+  const position=Math.max(0,selected.indexOf(current)+1);
+  $('chapter-count').textContent=`${String(position).padStart(2,'0')} / ${selected.length}`;
+  $('era').textContent=g.era;
+  $('game-title').textContent=g.title;
+  $('game-note').textContent=g.note;
+  logoLoadedFor=-1;logoRequested=-1;logoVersion='';
+  $('chapter').classList.add('logo-missing');
+  $('game-logo').classList.remove('loaded');
+  pollLogos();
+  $('complete').style.width=`${100*(position-1)/Math.max(1,selected.length-1)}%`;
+  [...nodes.children].forEach((n,j)=>{n.classList.toggle('done',j<position-1);n.classList.toggle('active',j===position-1)});
+  if(animate){
+    const card=$('chapter');card.classList.remove('switch-in');void card.offsetWidth;card.classList.add('switch-in');
+    revealDetails();
+  }
+}
+function applyState(state){
+  setPhase(state);
+  const queue=Array.isArray(state.queue)&&state.queue.length?state.queue:[...games.keys()];
+  const queueChanged=queue.join(',')!==selected.join(',');
+  if(queueChanged){selected=[...queue];rebuildNodes(selected)}
+  showChapterTitle=(state.titleVisible!==false && state.gameTitles?.[state.index]!==false);
+  showChapterLogo=(state.logos!==false && state.gameLogos?.[state.index]!==false);
+  $('stage').classList.toggle('titles-off',!showChapterTitle);
+  $('stage').classList.toggle('logos-off',!showChapterLogo);
+  const brand=$('stage').querySelector('.brand');
+  $('brand-name').textContent=state.brandName??'ITSOCHO';
+  $('brand-subtitle').textContent=(state.brandSubtitle?'· '+state.brandSubtitle:'');
+  brand.querySelector('.brand-mark').hidden=state.brandMarkVisible===false;
+  $('brand-name').hidden=state.brandNameVisible===false;
+  $('brand-subtitle').hidden=state.brandSubtitleVisible===false;
+  brand.hidden=(state.brandMarkVisible===false&&state.brandNameVisible===false&&state.brandSubtitleVisible===false);
+  const changedChapter=state.index!==current;
+  if(changedChapter)show(state.index,true);
+  else if(queueChanged){const pos=selected.indexOf(current);$('chapter-count').textContent=`${String(pos+1).padStart(2,'0')} / ${selected.length}`;$('complete').style.width=`${100*pos/Math.max(1,selected.length-1)}%`;[...nodes.children].forEach((n,j)=>{n.classList.toggle('done',j<pos);n.classList.toggle('active',j===pos)})}
+  const cinemaWas=cinema;
+  camera=!!state.camera;timeline=!!state.timeline;cinema=!!state.cinema;logos=state.logos!==false;
+  // Camera frame is a user-configurable 4:3 rectangle in the 1920x1080 canvas.
+  const cam=$('stage').querySelector('.cam');
+  const cw=Number(state.camWidth)||280;
+  cam.style.left=(Number.isFinite(Number(state.camX))?Number(state.camX):1588)+'px';
+  cam.style.top=(Number.isFinite(Number(state.camY))?Number(state.camY):799)+'px';
+  cam.style.width=cw+'px';cam.style.height=Math.round(cw*3/4)+'px';
+  const ps5=$('ps5-capture');
+  ps5.classList.toggle('ps5-visible',!!state.ps5Frame);
+  const ww=Number(state.ps5Width)||520;
+  ps5.style.width=ww+'px';
+  ps5.style.left=(Number(state.ps5X)??1345)+'px';
+  ps5.style.top=(Number(state.ps5Y)??130)+'px';
+  $('stage').classList.toggle('hud-hidden',state.hudVisible===false);
+  $('stage').classList.toggle('cam-off',!camera);
+  $('stage').classList.toggle('tl-hidden',!timeline);
+  $('stage').classList.toggle('cinema',cinema);
+  $('stage').classList.toggle('logos-off',!showChapterLogo);
+  if(showChapterLogo&&logoLoadedFor!==current)pollLogos();
+  if(state.flash!==previousFlash&&previousFlash>=0&&!changedChapter&&!cinema)revealDetails(6500);
+  previousFlash=state.flash;
+}
+function fit(){
+  $('stage').style.transform=`scale(${window.innerWidth/1920}, ${window.innerHeight/1080})`;
+}
+addEventListener('resize',fit);fit();
+show(current,false);
+requestAnimationFrame(()=>$('chapter').classList.add('visible'));
+// Existing controller API (OBS's browser source does not need to be interacted with).
+async function syncRemote(){
+  try{
+    const response=await fetch('/api/state',{cache:'no-store'});
+    if(!response.ok)throw Error('Panel desconectado');
+    const state=await response.json();
+    if(state.revision!==previousRevision){applyState(state);previousRevision=state.revision}
+    else {beatTarget=state.transitionPhase==='intro'?Math.max(0,Math.min(1,state.beatLevel||0)):0;haveLiveBass=!!state.beatLive;if(haveLiveBass)lastBassUpdate=performance.now();}
+  }catch(_){/* Remain visible when server momentarily restarts. */}
+}
+setInterval(syncRemote,110);
+syncRemote();pollLogos();
+</script></body></html>
