@@ -164,9 +164,11 @@ body{background:#0b101e}
 .cam-layout-fields input,.cam-layout-fields select{width:100%;background:#0d172a;color:white;border:1px solid #536c87;border-radius:9px;padding:10px;min-height:40px}
 .cam-scene{position:relative;width:100%;aspect-ratio:16/9;border:1px solid #4c6b84;border-radius:12px;overflow:hidden;touch-action:none;user-select:none;cursor:crosshair;background:repeating-linear-gradient(0deg,transparent 0,transparent calc(25% - 1px),#ffffff11 25%),repeating-linear-gradient(90deg,transparent 0,transparent calc(25% - 1px),#ffffff11 25%),linear-gradient(130deg,#1c2946,#13223b 62%,#251b36);}
 .cam-scene-label{position:absolute;top:8px;left:10px;color:#9eb7d2;font-size:11px;pointer-events:none}
-.cam-ghost-ps5{position:absolute;border:2px solid #4ee3f1;border-radius:6px;background:#4ee3f122;color:#bffbff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;box-shadow:0 0 14px #4ee3f144}.cam-ghost-ps5:active{cursor:grabbing}.cam-ghost-ps5:focus-visible{outline:3px solid #ff82bb;outline-offset:2px}
+.cam-ghost-ps5{position:absolute;border:1px dashed #bb8ecb77;background:#e78fd612;color:#c8a9c2;font-size:10px;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.ps5-drag-box{pointer-events:auto!important;border:2px solid #67d9f4!important;background:#163b54aa!important;color:#dbfbff!important;cursor:grab;touch-action:none;user-select:none;font-size:12px;font-weight:900;z-index:2;box-shadow:0 0 14px #55dffa44}
+.ps5-drag-box:active{cursor:grabbing}.ps5-drag-box:focus-visible{outline:3px solid #ff86bd}
 .cam-drag-box{position:absolute;left:0;top:0;border:2px solid #ff80bd;border-radius:7px;box-shadow:0 0 0 1px #75faff9c,inset 0 0 15px #ff5aaa22,0 0 14px #ff5aaa44;background:#17263b33;display:flex;align-items:center;justify-content:center;text-align:center;color:white;font-weight:900;font-size:12px;cursor:grab;touch-action:none;}
-.cam-drag-box:active{cursor:grabbing}.cam-drag-box:focus-visible{outline:3px solid #4be4f8;outline-offset:3px}
+.cam-drag-box{z-index:3}.cam-drag-box:active{cursor:grabbing}.cam-drag-box:focus-visible{outline:3px solid #4be4f8;outline-offset:3px}
 .cam-layout-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}.cam-layout-actions button{flex:0 0 auto}
 .cam-layout #cam-layout-feedback{font-size:12px;color:#a4f5de;margin:9px 0 0;min-height:17px}.cam-layout #cam-layout-feedback.error{color:#ffb9ca}
 @media(max-width:800px){.cam-layout-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -218,10 +220,10 @@ body{background:#0b101e}
  <label class="obs-checkbox"><input type="checkbox" id="obs-sync-enable" checked> Al pulsar «Cámara», cambiar también su visibilidad en OBS (en todas las escenas donde aparece)</label>
 
  <section class="cam-layout" aria-label="Ubicación de la cámara">
-  <h3>Posición de cámara · 4:3</h3>
-  <p>Arrastra el marco <b>rosa (cámara)</b> o <b>cyan (PS5)</b>. El overlay y las fuentes reales de OBS seguirán el movimiento cuando estés conectado y las fuentes estén vinculadas. También puedes ajustar X, Y y ancho.</p>
+  <h3>Posición de cámara y PS5 · Lienzo 1920×1080</h3>
+  <p>Arrastra el marco rosa de cámara o el marco azul de PS5 en esta vista previa para moverlos. Al soltar se guardará en el overlay; también puedes usar una esquina o introducir X/Y y el ancho.</p>
   <div class="cam-scene" id="cam-scene" aria-label="Vista previa interactiva del lienzo 1920 por 1080">
-   <span class="cam-scene-label">OBS · 1920×1080</span><div class="cam-ghost-ps5" id="cam-ps5-ghost" tabindex="0" role="slider" aria-label="Mover PS5; flechas para desplazar" aria-valuemin="0" aria-valuemax="1920" aria-valuenow="1345">PS5 · 16:9</div>
+   <span class="cam-scene-label">OBS · 1920×1080</span><div class="cam-ghost-ps5 ps5-drag-box" id="cam-ps5-ghost" tabindex="0" role="slider" aria-label="Mover PS5; flechas para desplazar" aria-valuemin="0" aria-valuemax="1920" aria-valuenow="1345">PS5 16:9</div>
    <div class="cam-drag-box" id="cam-drag-box" tabindex="0" role="slider" aria-label="Mover cámara; flechas para desplazar" aria-valuemin="0" aria-valuemax="1920" aria-valuenow="1588">CÁMARA 4:3</div>
   </div>
   <div class="cam-layout-fields">
@@ -231,8 +233,8 @@ body{background:#0b101e}
    <label>Ancho (px)<input id="cam-width" type="number" min="180" max="700" step="10" value="280"></label>
   </div>
   <div class="cam-layout-actions"><button id="cam-save-layout" class="mini active" type="button">Guardar posición</button>
-   <label class="obs-checkbox"><input id="cam-follow-obs" type="checkbox" checked> Sincronizar posición en OBS (fuente vinculada, 4:3)</label></div>
-  <p id="cam-layout-feedback" role="status">El movimiento se sincroniza al arrastrar. Para mover la cámara real debes conectar OBS y seleccionar su fuente. Las fuentes dentro de grupos no se reubican automáticamente.</p>
+   <label class="obs-checkbox"><input id="cam-follow-obs" type="checkbox" checked> Mover también la fuente vinculada en OBS (ajustar a 4:3)</label></div>
+  <p id="cam-layout-feedback" role="status">Arrastra la cámara rosa o la PS5 azul. Con OBS conectado y una fuente seleccionada, ambas se sincronizan al moverlas.</p>
  </section>
  <div id="obs-feedback" class="obs-feedback">Configúralo una vez. Si no conectas OBS, el botón Cámara seguirá controlando solamente el marco.</div>
  <p class="obs-help">En <strong>OBS → Herramientas → Ajustes del servidor WebSocket</strong>, activa el servidor, confirma el puerto (normalmente 4455) y copia la contraseña. <strong>No se guarda tu contraseña</strong>; hay que reconectar al recargar esta página. La fuente de cámara debe existir en alguna escena o grupo.</p>
@@ -249,10 +251,9 @@ body{background:#0b101e}
  </div>
  <div class="ps5-source"><label>Fuente real de PS5 en OBS (opcional)<select id="ps5-obs-source" disabled><option value="">Conecta OBS arriba y actualiza fuentes...</option></select></label>
   <button id="ps5-save-layout" class="mini" type="button">✓ Guardar posición y tamaño</button></div>
- <label class="obs-checkbox"><input id="ps5-obs-sync" type="checkbox" checked> Sincronizar visibilidad con OBS, incluso al activar/desactivar Modo Tráiler</label>
- <label class="obs-checkbox"><input id="ps5-follow-obs" type="checkbox" checked> Sincronizar posición de la captura PS5 en OBS al arrastrar o guardar</label>
- <p class="obs-help">Si vinculas tu captura, el botón controlará tanto su visibilidad en OBS como este marco. La captura debe estar <strong>debajo del overlay</strong> en la lista de fuentes. El marco no genera ni descarga el video de PS5 por sí mismo. Para encajarlo, ajusta la posición de la captura al mismo rectángulo X/Y/ancho × 9/16.</p>
- <div id="ps5-feedback" class="ps5-feedback">Puedes arrastrar el marco PS5 cyan en la misma vista previa de la cámara. Modo Tráiler oculta PS5, pero conserva la webcam.</div>
+ <label class="obs-checkbox"><input id="ps5-obs-sync" type="checkbox" checked> Sincronizar visibilidad y posición de la captura real en OBS (incluido Modo Tráiler)</label>
+ <p class="obs-help">Si vinculas tu captura, el botón controlará tanto su visibilidad en OBS como este marco. La captura debe estar <strong>debajo del overlay</strong> en la lista de fuentes. El marco no genera ni descarga el video de PS5 por sí mismo. Arrastra el marco azul en la vista previa compartida o usa X/Y/ancho. Su captura se alineará automáticamente si OBS está conectado y sincronizado.</p>
+ <div id="ps5-feedback" class="ps5-feedback">Marco oculto. Ajusta la posición y pulsa Mostrar PS5.</div>
 </section>
 <div class="actions"><button class="mini" data-action="first">↩ Empezar desde GTA 1</button><button id="cam" class="mini" data-action="camera">📹 Cámara: visible</button><button id="timeline" class="mini" data-action="timeline">◉ Línea del tiempo: visible</button><button id="cinema" class="mini" data-action="cinema">🎬 Modo tráiler: desactivado</button><button id="flash" class="mini" data-action="flash">✨ Mostrar descripción 6 s</button><button id="logos" class="mini" data-action="logos">🖼️ Logos: visibles</button><label class="select-wrap"><select id="jump"><option value="">Saltar a un juego...</option></select></label></div>
 <section class="logos-tools" aria-label="Logos oficiales">
@@ -288,7 +289,7 @@ body{background:#0b101e}
   <div class="music-help music-setup"><b>Una sola vez en OBS:</b> añade una fuente <b>Navegador</b> llamada “ItsOcho Música GTA” con URL <code>http://127.0.0.1:8767/music</code>, tamaño 1×1 y activa <b>Controlar audio mediante OBS</b>. Deja esta fuente visible y silencia su monitorización para evitar doble sonido. <b>El logo usa esa fuente para detectar los bajos; si no llega señal, se mueve con un pulso visual de respaldo. No dupliques la fuente de audio.</b></div>
 </section>
 <div class="bar"><h2>Elegir capítulo directamente</h2><span>Los desactivados no aparecen en la cola ni pueden seleccionarse</span></div><div id="chapters" class="chapters"></div>
-<div class="hint"><strong>Versión v5.12 con cola y marca editables: </strong>El overlay ocupa solo una franja inferior. Al cambiar de juego, muestra la descripción unos segundos y se contrae suavemente. <strong>Modo tráiler</strong> lo hace aún más pequeño y esconde la cámara y la marca mientras ves videos.<p><strong>No tienes que usar «Interactuar» en OBS.</strong> Mantén este panel abierto y controla todo desde aquí. También funcionan las teclas <strong>←</strong> y <strong>→</strong> cuando esta ventana está seleccionada. <p>URL para tu fuente Navegador de OBS: <code>http://127.0.0.1:8767/overlay</code></p><p class="warn">El servidor local está desconectado. Abre <b>INICIAR_PANEL.bat</b> y deja su ventana encendida durante el directo.</p></div>
+<div class="hint"><strong>Versión v5.12 con cola y marca editables: </strong>El overlay ocupa solo una franja inferior. Al cambiar de juego, muestra la descripción unos segundos y se contrae suavemente. <strong>Modo tráiler</strong> lo hace aún más pequeño y mantiene visible la cámara y oculta la captura de PS5 con su marco mientras ves videos.<p><strong>No tienes que usar «Interactuar» en OBS.</strong> Mantén este panel abierto y controla todo desde aquí. También funcionan las teclas <strong>←</strong> y <strong>→</strong> cuando esta ventana está seleccionada. <p>URL para tu fuente Navegador de OBS: <code>http://127.0.0.1:8767/overlay</code></p><p class="warn">El servidor local está desconectado. Abre <b>INICIAR_PANEL.bat</b> y deja su ventana encendida durante el directo.</p></div>
 </main><script>
 const games=[
 ['1997','Grand Theft Auto','DMA Design, vista cenital y el nacimiento de una saga.'],
@@ -403,7 +404,7 @@ $('year').textContent=g[0];$('title').textContent=g[1];$('note').textContent=g[2
  const hidden=s.hudVisible===false;const hudBtn=$('hud-toggle');
  hudBtn.textContent=hidden?'◉ Mostrar HUD':'◉ Ocultar HUD';hudBtn.classList.toggle('hud-is-hidden',hidden);hudBtn.setAttribute('aria-pressed',String(hidden));
  $('hud-state').textContent=hidden?'● Oculto en OBS':'● Visible en OBS';$('hud-state').classList.toggle('is-hidden',hidden);
- $('ps5-toggle').textContent=s.ps5Frame?'▣ Ocultar PS5':'▣ Mostrar PS5';
+ $('ps5-toggle').textContent=s.ps5Frame?'▣ Ocultar PS5':'▣ Mostrar PS5';$('ps5-toggle').disabled=!!s.cinema;$('ps5-toggle').title=s.cinema?'Desactiva Modo Tráiler para controlar la PS5':'';
  $('ps5-toggle').classList.toggle('active',!!s.ps5Frame);
  if(!ps5Editing){$('ps5-x').value=s.ps5X??1345;$('ps5-y').value=s.ps5Y??130;$('ps5-width').value=s.ps5Width??520;syncPs5Preset(s)}
  if(!camEditing){$('cam-x').value=s.camX??1588;$('cam-y').value=s.camY??799;$('cam-width').value=s.camWidth??280;syncCamPreset()}
@@ -417,8 +418,8 @@ $('year').textContent=g[0];$('title').textContent=g[1];$('note').textContent=g[2
  $('last').textContent='Ir a '+games[queue[queue.length-1]][1]+' ⏭';
  document.querySelectorAll('[data-jump]').forEach(el=>{const i=Number(el.dataset.jump);el.classList.toggle('active',i===s.index);el.classList.toggle('disabled-game',!queue.includes(i))});}
 function online(ok){$('status').classList.toggle('offline',!ok);$('statusText').textContent=ok?'Panel conectado y listo':'Servidor local desconectado';}
-async function poll(){try{const r=await fetch('/api/state',{cache:'no-store'});if(!r.ok)throw Error();const s=await r.json();if(s.revision!==state.revision||!window.ready||(s.transitionPhase==='intro' && s.beatLive!==state.beatLive)){render(s);window.ready=true;}online(true);}catch{online(false)}}
-async function command(action,index){if(action==='camera')return toggleCameraAndOBS();if(action==='ps5_toggle')return togglePs5AndOBS();try{const response=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,index})});const data=await response.json();if(!response.ok)throw Error(data.error||'Comando rechazado');render(data);online(true);}catch(e){online(false);alert(e.message)}}
+async function poll(){try{const r=await fetch('/api/state',{cache:'no-store'});if(!r.ok)throw Error();const s=await r.json();if(s.revision!==state.revision||!window.ready||(s.transitionPhase==='intro' && s.beatLive!==state.beatLive)){render(s);window.ready=true;}if(s.cinema!==trailerLastMode){trailerLastMode=s.cinema;reconcileTrailerObs(s).catch(e=>ps5Feedback('Modo Tráiler: '+e.message,true))}online(true);}catch{online(false)}}
+async function command(action,index){if(action==='camera')return toggleCameraAndOBS();if(action==='ps5_toggle')return togglePs5AndOBS();if(action==='cinema')return toggleTrailerMode();try{const response=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,index})});const data=await response.json();if(!response.ok)throw Error(data.error||'Comando rechazado');render(data);online(true);}catch(e){online(false);alert(e.message)}}
 
 // OBS WebSocket 5.x: browser-side client so Python needs zero extra modules.
 // Only connects to OBS on 127.0.0.1; password is NEVER saved to files or localStorage.
@@ -578,53 +579,83 @@ function paintCamScene(){const v=camLayout(),rect=camScene.getBoundingClientRect
  camBox.style.width=(v.width/1920*100)+'%';camBox.style.height=(Math.round(v.width*.75)/1080*100)+'%';
  camBox.setAttribute('aria-valuenow',String(v.x));
  const px=ps5Editing?Number($('ps5-x').value):Number(state.ps5X??1345),py=ps5Editing?Number($('ps5-y').value):Number(state.ps5Y??130),pw=ps5Editing?Number($('ps5-width').value):Number(state.ps5Width??520);
- const ghost=$('cam-ps5-ghost');ghost.style.left=(px/1920*100)+'%';ghost.style.top=(py/1080*100)+'%';ghost.style.width=(pw/1920*100)+'%';ghost.style.height=(pw*9/16/1080*100)+'%';ghost.style.opacity=state.cinema?'.55':'1';ghost.setAttribute('aria-valuenow',String(px));
+ const ghost=$('cam-ps5-ghost');ghost.style.left=(px/1920*100)+'%';ghost.style.top=(py/1080*100)+'%';ghost.style.width=(pw/1920*100)+'%';ghost.style.height=(pw*9/16/1080*100)+'%';ghost.style.opacity=state.cinema?'.35':(state.ps5Frame?'1':'.65');ghost.setAttribute('aria-valuenow',String(px));
 }
 function camFeedback(message,error=false){const el=$('cam-layout-feedback');el.textContent=message;el.classList.toggle('error',error)}
 function camEdit(x,y,w){w=Math.max(180,Math.min(700,Math.round(w)));x=Math.max(0,Math.min(1920-w,Math.round(x)));y=Math.max(0,Math.min(1080-Math.round(w*.75),Math.round(y)));
- $('cam-x').value=x;$('cam-y').value=y;$('cam-width').value=w;camEditing=true;syncCamPreset();paintCamScene();queueLiveMove('cam');}
+ $('cam-x').value=x;$('cam-y').value=y;$('cam-width').value=w;camEditing=true;syncCamPreset();paintCamScene();}
 $('cam-preset').addEventListener('change',()=>{const w=Math.round(Number($('cam-width').value))||280;const xy=camPresetXY($('cam-preset').value,w);if(xy)camEdit(...xy,w)});
-for(const id of camInputs)$(id).addEventListener('input',()=>{camEditing=true;$('cam-preset').value='custom';paintCamScene();queueLiveMove('cam')});
+for(const id of camInputs)$(id).addEventListener('input',()=>{camEditing=true;$('cam-preset').value='custom';paintCamScene()});
+// Debounced OBS movement: drag updates the real scene without spamming WebSocket.
+// User-visible feedback distinguishes a moved frame from an offline OBS source.
+const placementTimers={camera:0,ps5:0};
+let placementSequence={camera:0,ps5:0};
+function scheduleObsPlacement(which){
+ clearTimeout(placementTimers[which]);
+ const serial=++placementSequence[which];
+ placementTimers[which]=setTimeout(async()=>{
+  if(serial!==placementSequence[which])return;
+  const selected=which==='camera'?obsSelection:ps5ObsSelection;
+  const sync=$(which==='camera'?'cam-follow-obs':'ps5-obs-sync').checked;
+  if(!sync||!selected||!obsClient.online)return;
+  try{
+   const v=which==='camera'?camLayout():ps5Layout();
+   if(which==='camera'&&cameraLayoutValid(v))await obsPlaceCamera(v);
+   else if(which==='ps5'&&ps5LayoutValid(v))await obsPlacePs5(v);
+  }catch(e){(which==='camera'?camFeedback:ps5Feedback)('Marco movido; OBS: '+e.message,true)}
+ },170);
+}
 let dragCam=null;
 camBox.addEventListener('pointerdown',ev=>{if(ev.button!==0&&ev.pointerType==='mouse')return;ev.preventDefault();
  const r=camScene.getBoundingClientRect(),v=camLayout();dragCam={id:ev.pointerId,sx:ev.clientX,sy:ev.clientY,x:v.x,y:v.y};camBox.setPointerCapture(ev.pointerId);});
 camBox.addEventListener('pointermove',ev=>{if(!dragCam||ev.pointerId!==dragCam.id)return;
- const r=camScene.getBoundingClientRect();camEdit(dragCam.x+(ev.clientX-dragCam.sx)*1920/r.width,dragCam.y+(ev.clientY-dragCam.sy)*1080/r.height,Number($('cam-width').value)||280);});
-camBox.addEventListener('pointerup',async ev=>{if(!dragCam||ev.pointerId!==dragCam.id)return;dragCam=null;await flushLiveMove('cam')});
+ const r=camScene.getBoundingClientRect();camEdit(dragCam.x+(ev.clientX-dragCam.sx)*1920/r.width,dragCam.y+(ev.clientY-dragCam.sy)*1080/r.height,Number($('cam-width').value)||280);scheduleObsPlacement('camera');});
+camBox.addEventListener('pointerup',async ev=>{if(!dragCam||ev.pointerId!==dragCam.id)return;dragCam=null;await saveCamLayout()});
 camBox.addEventListener('pointercancel',()=>{dragCam=null});
 camBox.addEventListener('keydown',ev=>{const offset=ev.shiftKey?10:1;const step={ArrowLeft:[-offset,0],ArrowRight:[offset,0],ArrowUp:[0,-offset],ArrowDown:[0,offset]}[ev.key];if(!step)return;ev.preventDefault();const v=camLayout();camEdit(v.x+step[0],v.y+step[1],v.width)});
-camBox.addEventListener('keyup',ev=>{if(ev.key.startsWith('Arrow'))flushLiveMove('cam')});
+camBox.addEventListener('keyup',ev=>{if(ev.key.startsWith('Arrow'))saveCamLayout()});
 // Each OBS scene has its own Scene Item transform. Don't touch unrelated sources.
 // Camera can be in several scenes; transform only direct scene entries. Nested groups
 // are skipped because their coordinates are relative to the group, not the scene.
-async function obsPlaceFrame(sourceName,{x,y,width},ratio,label){
- if(!obsClient.online)throw Error('Conecta OBS antes de mover la fuente real.');
- if(!sourceName)throw Error('Selecciona la fuente de '+label+' en OBS antes de sincronizar.');
- if(obsSelection && ps5ObsSelection && obsSelection===ps5ObsSelection)throw Error('La cámara y PS5 deben usar fuentes distintas de OBS.');
- const all=await obsAllCameraItems();
- const chosen=all.filter(i=>i.sourceName===sourceName&&!i.group);
- if(!chosen.length)throw Error('No encontré «'+sourceName+'» como fuente directa en una escena. No modifico fuentes dentro de grupos.');
- const changed=[];
+async function obsPlaceCamera({x,y,width}){
+ if(!obsClient.online)throw Error('Conecta OBS antes de mover la webcam real.');
+ if(!obsSelection)throw Error('Selecciona la fuente de webcam en OBS antes de sincronizar su posición.');
+ const items=await obsAllCameraItems();const chosen=items.filter(i=>i.sourceName===obsSelection&&!i.group);
+ if(!chosen.length)throw Error('No encontré la webcam como fuente directa de ninguna escena. Si está dentro de un grupo, muévela manualmente en OBS.');
+ const old=[];const changed=[];
  try{
-  for(const item of chosen){
-   const r=await obsRequest('GetSceneItemTransform',{sceneName:item.sceneName,sceneItemId:item.sceneItemId});
-   const old=r.sceneItemTransform;
-   const transform={positionX:x,positionY:y,alignment:5,boundsType:'OBS_BOUNDS_SCALE_OUTER',boundsWidth:width,boundsHeight:Math.round(width*ratio)};
-   await obsRequest('SetSceneItemTransform',{sceneName:item.sceneName,sceneItemId:item.sceneItemId,sceneItemTransform:transform});
-   changed.push({item,old});
+  for(const item of chosen){const r=await obsRequest('GetSceneItemTransform',{sceneName:item.sceneName,sceneItemId:item.sceneItemId});old.push({item,transform:r.sceneItemTransform});
+   const transform={positionX:x,positionY:y,alignment:5,boundsType:'OBS_BOUNDS_SCALE_OUTER',boundsWidth:width,boundsHeight:Math.round(width*.75)};
+   await obsRequest('SetSceneItemTransform',{sceneName:item.sceneName,sceneItemId:item.sceneItemId,sceneItemTransform:transform});changed.push(item);
   }
- }catch(e){
-  for(const entry of changed.reverse())try{
-   const old=entry.old;
-   await obsRequest('SetSceneItemTransform',{sceneName:entry.item.sceneName,sceneItemId:entry.item.sceneItemId,sceneItemTransform:{positionX:old.positionX,positionY:old.positionY,alignment:old.alignment,boundsType:old.boundsType,boundsWidth:old.boundsWidth,boundsHeight:old.boundsHeight,scaleX:old.scaleX,scaleY:old.scaleY}})
-  }catch{}
-  throw e;
- }
+ }catch(e){for(const r of old.reverse())if(changed.includes(r.item)){const prev=r.transform;
+  const rollback={positionX:prev.positionX,positionY:prev.positionY,alignment:prev.alignment,boundsType:prev.boundsType,boundsWidth:prev.boundsWidth,boundsHeight:prev.boundsHeight,scaleX:prev.scaleX,scaleY:prev.scaleY};
+  try{await obsRequest('SetSceneItemTransform',{sceneName:r.item.sceneName,sceneItemId:r.item.sceneItemId,sceneItemTransform:rollback})}catch{}}
+  throw e;}
  return chosen.length;
 }
-async function obsPlaceCamera(v){return obsPlaceFrame(obsSelection,v,3/4,'cámara')}
-async function obsPlacePs5(v){return obsPlaceFrame(ps5ObsSelection,v,9/16,'PS5')}
-
+async function obsPlacePs5({x,y,width}){
+ if(!obsClient.online)throw Error('Conecta OBS antes de mover la captura real de PS5.');
+ if(!ps5ObsSelection)throw Error('Selecciona la captura de PS5 en OBS.');
+ if(ps5ObsSelection===obsSelection)throw Error('PS5 y cámara deben usar fuentes diferentes.');
+ const all=await obsAllCameraItems();
+ const matches=all.filter(i=>i.sourceName===ps5ObsSelection&&!i.group);
+ if(!matches.length)throw Error('La fuente PS5 no aparece directamente en ninguna escena. Las fuentes dentro de grupos se omiten para evitar movimientos incorrectos.');
+ const changed=[];
+ try{
+  for(const item of matches){
+   const r=await obsRequest('GetSceneItemTransform',{sceneName:item.sceneName,sceneItemId:item.sceneItemId});
+   const t={positionX:x,positionY:y,alignment:5,boundsType:'OBS_BOUNDS_SCALE_INNER',boundsWidth:width,boundsHeight:Math.round(width*9/16)};
+   await obsRequest('SetSceneItemTransform',{sceneName:item.sceneName,sceneItemId:item.sceneItemId,sceneItemTransform:t});
+   changed.push({item,old:r.sceneItemTransform});
+  }
+ }catch(e){for(const r of changed.reverse())try{await obsRequest('SetSceneItemTransform',{sceneName:r.item.sceneName,sceneItemId:r.item.sceneItemId,sceneItemTransform:r.old})}catch{};throw e}
+ return matches.length;
+}
+function ps5Layout(){return {x:Number($('ps5-x').value),y:Number($('ps5-y').value),width:Number($('ps5-width').value)}}
+function ps5LayoutValid({x,y,width}){return [x,y,width].every(Number.isInteger)&&width>=320&&width<=850&&x>=0&&x+width<=1920&&y>=0&&y+Math.round(width*9/16)<=1080}
+function ps5Edit(x,y,w){w=Math.max(320,Math.min(850,Math.round(w)));x=Math.max(0,Math.min(1920-w,Math.round(x)));y=Math.max(0,Math.min(1080-Math.round(w*9/16),Math.round(y)));
+ $('ps5-x').value=x;$('ps5-y').value=y;$('ps5-width').value=w;ps5Editing=true;syncPs5Preset({ps5X:x,ps5Y:y,ps5Width:w});paintCamScene();}
 async function saveCamLayout(){if(camSaving)return;const v=camLayout();if(!cameraLayoutValid(v)){camFeedback('Posición inválida. El marco 4:3 debe quedar dentro de 1920×1080; ancho 180–700.',true);return}
  camSaving=true;$('cam-save-layout').disabled=true;try{
   // Server-side value remains authoritative. If OBS fails, do not claim both moved.
@@ -654,83 +685,87 @@ function ps5UpdatePreset(){const where=$('ps5-preset').value;if(where==='custom'
  const w=Number($('ps5-width').value)||520,h=Math.round(w*9/16);
  $('ps5-x').value=where.endsWith('right')?1920-w-55:55;
  $('ps5-y').value=where.startsWith('top')?130:1080-h-90;
- ps5Editing=true;paintCamScene();queueLiveMove('ps5');
+ ps5Editing=true;
 }
+// PS5 capture shares the same 1920x1080 drag scene as the camera.
+const ps5DragBox=$('cam-ps5-ghost');let dragPs5=null;
+ps5DragBox.addEventListener('pointerdown',ev=>{if(ev.button!==0&&ev.pointerType==='mouse')return;ev.preventDefault();ev.stopPropagation();
+ const v=ps5Layout();dragPs5={id:ev.pointerId,sx:ev.clientX,sy:ev.clientY,x:v.x,y:v.y};ps5DragBox.setPointerCapture(ev.pointerId)});
+ps5DragBox.addEventListener('pointermove',ev=>{if(!dragPs5||ev.pointerId!==dragPs5.id)return;
+ const r=camScene.getBoundingClientRect();ps5Edit(dragPs5.x+(ev.clientX-dragPs5.sx)*1920/r.width,dragPs5.y+(ev.clientY-dragPs5.sy)*1080/r.height,Number($('ps5-width').value)||520);scheduleObsPlacement('ps5')});
+ps5DragBox.addEventListener('pointerup',ev=>{if(!dragPs5||ev.pointerId!==dragPs5.id)return;dragPs5=null;savePs5Layout()});
+ps5DragBox.addEventListener('pointercancel',()=>dragPs5=null);
+ps5DragBox.addEventListener('keydown',ev=>{const d=ev.shiftKey?10:1;const v={ArrowLeft:[-d,0],ArrowRight:[d,0],ArrowUp:[0,-d],ArrowDown:[0,d]}[ev.key];if(!v)return;ev.preventDefault();const x=ps5Layout();ps5Edit(x.x+v[0],x.y+v[1],x.width);scheduleObsPlacement('ps5')});
+ps5DragBox.addEventListener('keyup',ev=>{if(ev.key.startsWith('Arrow'))savePs5Layout()});
 $('ps5-preset').addEventListener('change',ps5UpdatePreset);
-for(const id of ['ps5-x','ps5-y','ps5-width'])$(''+id).addEventListener('input',()=>{ps5Editing=true;if(id==='ps5-width'&&$('ps5-preset').value!=='custom')ps5UpdatePreset();else $('ps5-preset').value='custom';paintCamScene();queueLiveMove('ps5')});
-$('ps5-save-layout').addEventListener('click',async()=>{
- const x=Number($('ps5-x').value),y=Number($('ps5-y').value),width=Number($('ps5-width').value);
- if(![x,y,width].every(Number.isInteger)||width<320||width>850||x<0||x>1920-width||y<0||y>1080-Math.round(width*9/16)){
-  ps5Feedback('Posición fuera de pantalla. El ancho debe estar entre 320 y 850 y el marco debe caber en 1920×1080.',true);return;
+for(const id of ['ps5-x','ps5-y','ps5-width'])$(''+id).addEventListener('input',()=>{ps5Editing=true;if(id==='ps5-width'&&$('ps5-preset').value!=='custom')ps5UpdatePreset();else $('ps5-preset').value='custom';paintCamScene();});
+async function savePs5Layout(){const v=ps5Layout();if(!ps5LayoutValid(v)){
+ ps5Feedback('Posición fuera del lienzo 1920×1080; ancho permitido 320–850.',true);return;
  }
  $('ps5-save-layout').disabled=true;
- try{const r=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'ps5_layout',x,y,width})});
-   const data=await r.json();if(!r.ok)throw Error(data.error||'No se guardó la posición');
-   ps5Editing=false;render(data);let msg='PS5 guardado: X '+x+', Y '+y+', '+width+'×'+Math.round(width*9/16)+' px.';if($('ps5-follow-obs').checked&&ps5ObsSelection){try{const n=await obsPlacePs5({x,y,width});msg+=' Captura real movida en '+n+' escena(s).'}catch(e){ps5Feedback(msg+' La fuente OBS no se movió: '+e.message,true);return}}else msg+=' Conecta OBS y selecciona PS5 para sincronizar la captura real.';ps5Feedback(msg);
+ try{
+  const r=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'ps5_layout',...v})});
+  const data=await r.json();if(!r.ok)throw Error(data.error||'No se guardó la PS5');
+  ps5Editing=false;render(data);
+  let message='Marco PS5 guardado en X '+v.x+', Y '+v.y+' · '+v.width+'×'+Math.round(v.width*9/16)+' px.';
+  if($('ps5-obs-sync').checked){try{const n=await obsPlacePs5(v);message+=' Captura real alineada en '+n+' escena(s) de OBS.';}catch(e){ps5Feedback(message+' OBS no se movió: '+e.message,true);return}}
+  else message+=' Sin sincronización con OBS (casilla desactivada).';
+  ps5Feedback(message);
  }catch(e){ps5Feedback(e.message,true)}finally{$('ps5-save-layout').disabled=false}
-});
-// v5.16: Coalesced live drag syncing. Only the latest coordinates are used.
-// Serial network operations prevent older mouse events from overwriting newer positions.
-const liveMoves={cam:{timer:0,running:null,dirty:false},ps5:{timer:0,running:null,dirty:false}};
-function liveMoveValues(kind){return kind==='cam'?camLayout():{x:Number($('ps5-x').value),y:Number($('ps5-y').value),width:Number($('ps5-width').value)}}
-function liveMoveValid(kind,v){return kind==='cam'?cameraLayoutValid(v):[v.x,v.y,v.width].every(Number.isInteger)&&v.width>=320&&v.width<=850&&v.x>=0&&v.y>=0&&v.x+v.width<=1920&&v.y+Math.round(v.width*9/16)<=1080}
-function queueLiveMove(kind){
- const job=liveMoves[kind];job.dirty=true;
- // Throttle rather than debounce: continuous pointermove events must NOT
- // postpone every OBS update until the user releases the frame.
- // One scheduled flush at a time; the in-flight worker picks up latest values.
- if(job.running||job.timer)return;
- job.timer=setTimeout(()=>{job.timer=0;flushLiveMove(kind)},85);
 }
-async function flushLiveMove(kind){
- const job=liveMoves[kind];clearTimeout(job.timer);job.timer=0;job.dirty=true;
- if(job.running)return job.running;
- job.running=(async()=>{
-  job.error=false;
-  while(job.dirty){
-   job.dirty=false;
-   const v=liveMoveValues(kind);
-   if(!liveMoveValid(kind,v))continue;
-   try{
-    const r=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:kind==='cam'?'camera_layout':'ps5_layout',...v})});
-    if(!r.ok){const data=await r.json().catch(()=>({}));throw Error(data.error||'No se guardó la posición')}
-    // The overlay receives this position through /api/state even without OBS.
-    if(kind==='cam'&&$('cam-follow-obs').checked&&obsSelection){await obsPlaceCamera(v)}
-    if(kind==='ps5'&&$('ps5-follow-obs').checked&&ps5ObsSelection){await obsPlacePs5(v)}
-   }catch(e){job.error=true;(kind==='cam'?camFeedback:ps5Feedback)('El marco puede actualizarse, pero no pude sincronizar OBS: '+e.message,true)}
-  }
-  if(kind==='cam'){if(!dragCam)camEditing=false;if(!job.error)camFeedback('Cámara: posición guardada'+(obsClient.online&&obsSelection&&$('cam-follow-obs').checked?' y fuente de OBS alineada.':'. Vincula la cámara a OBS para mover también la captura.'))}
-  else{if(!dragPs5)ps5Editing=false;if(!job.error)ps5Feedback('PS5: posición guardada'+(obsClient.online&&ps5ObsSelection&&$('ps5-follow-obs').checked?' y fuente de OBS alineada.':'. Vincula PS5 a OBS para mover también la captura.'))}
- })().finally(()=>{job.running=null;if(job.dirty)queueLiveMove(kind)});
- return job.running;
-}
-// PS5 drag handle reuses the same 1920×1080 editor and never changes the live GTA.
-const ps5Box=$('cam-ps5-ghost');let dragPs5=null;
-ps5Box.addEventListener('pointerdown',ev=>{if(ev.button!==0&&ev.pointerType==='mouse')return;ev.preventDefault();ev.stopPropagation();
- const r=camScene.getBoundingClientRect();dragPs5={id:ev.pointerId,sx:ev.clientX,sy:ev.clientY,x:Number($('ps5-x').value),y:Number($('ps5-y').value)};ps5Box.setPointerCapture(ev.pointerId)});
-ps5Box.addEventListener('pointermove',ev=>{if(!dragPs5||ev.pointerId!==dragPs5.id)return;
- const r=camScene.getBoundingClientRect(),w=Number($('ps5-width').value)||520;
- const x=Math.max(0,Math.min(1920-w,Math.round(dragPs5.x+(ev.clientX-dragPs5.sx)*1920/r.width)));
- const y=Math.max(0,Math.min(1080-Math.round(w*9/16),Math.round(dragPs5.y+(ev.clientY-dragPs5.sy)*1080/r.height)));
- $('ps5-x').value=x;$('ps5-y').value=y;ps5Editing=true;syncPs5Preset({ps5X:x,ps5Y:y,ps5Width:w});paintCamScene();queueLiveMove('ps5')});
-ps5Box.addEventListener('pointerup',async ev=>{if(!dragPs5||ev.pointerId!==dragPs5.id)return;dragPs5=null;await flushLiveMove('ps5')});
-ps5Box.addEventListener('pointercancel',()=>{dragPs5=null});
-ps5Box.addEventListener('keydown',ev=>{const step=ev.shiftKey?10:1;const delta={ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]}[ev.key];if(!delta)return;ev.preventDefault();const w=Number($('ps5-width').value),h=Math.round(w*9/16);$('ps5-x').value=Math.max(0,Math.min(1920-w,Number($('ps5-x').value)+delta[0]));$('ps5-y').value=Math.max(0,Math.min(1080-h,Number($('ps5-y').value)+delta[1]));ps5Editing=true;paintCamScene();queueLiveMove('ps5')});
-ps5Box.addEventListener('keyup',ev=>{if(ev.key.startsWith('Arrow'))flushLiveMove('ps5')});
-
+$('ps5-save-layout').addEventListener('click',savePs5Layout);
 $('ps5-obs-source').addEventListener('change',()=>{
- ps5ObsSelection=$('ps5-obs-source').value;saveObsPref();
+ ps5ObsSelection=$('ps5-obs-source').value;saveObsPref();trailerObsRestore=[];trailerObsSuppressed=false;if(state.cinema)reconcileTrailerObs(state).catch(e=>ps5Feedback(e.message,true));
  ps5Feedback(ps5ObsSelection?'Fuente PS5 vinculada: «'+ps5ObsSelection+'».':'Sin vincular: el botón mostrará solamente el marco.');
 });
+// Modo Tráiler: suppress only the PS5 capture. Remember each scene item's
+// previous enabled state and restore it on exit. The camera is never toggled.
+let trailerObsSuppressed=false;
+let trailerObsRestore=[];
+let trailerObsWorking=false;
+let trailerLastMode=null;
+async function reconcileTrailerObs(s=state){
+ if(trailerObsWorking)return;
+ if(!obsClient.online||!ps5ObsSelection||!$('ps5-obs-sync').checked)return;
+ if(ps5ObsSelection===obsSelection)throw Error('Elige una fuente PS5 distinta de la webcam.');
+ if(s.cinema===trailerObsSuppressed)return;
+ trailerObsWorking=true;
+ try{
+  if(s.cinema){
+   const all=await obsAllCameraItems();const matches=all.filter(i=>i.sourceName===ps5ObsSelection);
+   if(!matches.length)throw Error('La captura PS5 no está vinculada a ninguna escena.');
+   const restored=[];
+   for(const item of matches){if(!item.enabled)continue;
+    await obsRequest('SetSceneItemEnabled',{sceneName:item.sceneName,sceneItemId:item.sceneItemId,sceneItemEnabled:false});
+    restored.push(item);
+   }
+   trailerObsRestore=restored;trailerObsSuppressed=true;
+   ps5Feedback('Modo Tráiler: captura PS5 y marco ocultos; cámara intacta.');
+  }else{
+   // Restore only items we hid, and only if they still exist with that ID.
+   const all=await obsAllCameraItems();
+   for(const item of trailerObsRestore){if(all.some(a=>a.sceneName===item.sceneName&&a.sceneItemId===item.sceneItemId&&a.sourceName===ps5ObsSelection))
+    await obsRequest('SetSceneItemEnabled',{sceneName:item.sceneName,sceneItemId:item.sceneItemId,sceneItemEnabled:true});}
+   trailerObsRestore=[];trailerObsSuppressed=false;
+   ps5Feedback('Modo Tráiler finalizado: visibilidad anterior de PS5 restaurada.');
+  }
+ }finally{trailerObsWorking=false}
+}
+async function toggleTrailerMode(){
+ const r=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'cinema'})});
+ const data=await r.json();if(!r.ok)throw Error(data.error||'No se pudo cambiar el modo');
+ render(data);
+ try{await reconcileTrailerObs(data)}catch(e){ps5Feedback('Modo Tráiler cambiado; OBS PS5: '+e.message,true)}
+}
 async function togglePs5AndOBS(){
- if(ps5Busy)return;ps5Busy=true;$('ps5-toggle').disabled=true;
+ if(ps5Busy||state.cinema)return;ps5Busy=true;$('ps5-toggle').disabled=true;
  const target=!state.ps5Frame;
  const sync=$('ps5-obs-sync').checked&&!!ps5ObsSelection;
  let changed=null;
  try{
   if(sync){
    if(ps5ObsSelection===obsSelection)throw Error('Elige otra fuente para PS5; no debe ser la misma webcam.');
-   changed=await setObsSourceEnabled(ps5ObsSelection,target&&!state.cinema);
+   changed=await setObsSourceEnabled(ps5ObsSelection,target);
   }
   const r=await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'ps5_toggle'})});
   const data=await r.json();if(!r.ok)throw Error(data.error||'No se pudo cambiar el marco PS5');
@@ -740,14 +775,14 @@ async function togglePs5AndOBS(){
  }catch(e){
   if(changed)for(const item of changed.changed.reverse())try{await obsRequest('SetSceneItemEnabled',{sceneName:item.sceneName,sceneItemId:item.sceneItemId,sceneItemEnabled:item.enabled})}catch{}
   ps5Feedback(e.message,true);
- }finally{ps5Busy=false;$('ps5-toggle').disabled=false}
+ }finally{ps5Busy=false;$('ps5-toggle').disabled=!!state.cinema}
 }
 $('ps5-toggle').addEventListener('click',togglePs5AndOBS);
 
 $('obs-connect').addEventListener('click',async()=>{
  if(obsClient.online){obsDisconnect();obsFeedback('OBS desconectado: el panel controla solo el marco.');return}
  if(obsBusy)return;obsBusy=true;$('obs-connect').disabled=true;
- try{await obsConnect();await obsRefreshSources();obsFeedback('OBS conectado. Selecciona la fuente real de la cámara para vincularla.')}
+ try{await obsConnect();await obsRefreshSources();trailerObsSuppressed=false;trailerObsRestore=[];await reconcileTrailerObs(state);obsFeedback('OBS conectado. Selecciona las fuentes reales de la cámara y PS5.')}
  catch(e){obsFeedback(e.message,true);obsStatus(false,'OBS no conectado')}
  finally{obsBusy=false;$('obs-connect').disabled=false}
 });
@@ -883,7 +918,7 @@ render(state);poll();logoStatus();musicStatus();setInterval(poll,550);setInterva
   const [id,label,icon]=tabs[i],button=document.createElement('button');button.type='button';button.className='nav-link';button.dataset.view=id;button.setAttribute('aria-controls','view-'+id);button.setAttribute('aria-selected','false');button.innerHTML='<span class="nav-icon">'+icon+'</span>'+label;
   button.addEventListener('click',()=>navigate(id));sidebar.append(button);navButtons.push(button);
  }
- const sidebarEnd=document.createElement('div');sidebarEnd.className='sidebar-bottom';sidebarEnd.innerHTML='<strong>ItsOcho Studio v5.16</strong><div id="side-now">19 capítulos disponibles</div><div>Local · OBS:8767</div>';sidebar.append(sidebarEnd);
+ const sidebarEnd=document.createElement('div');sidebarEnd.className='sidebar-bottom';sidebarEnd.innerHTML='<strong>ItsOcho Studio v5.15</strong><div id="side-now">19 capítulos disponibles</div><div>Local · OBS:8767</div>';sidebar.append(sidebarEnd);
  const views={};
  for(const [id,title] of tabs){const wrapper=document.createElement('section');wrapper.id='view-'+id;wrapper.className='studio-view';wrapper.hidden=true;
    const h=document.createElement('div');h.className='view-heading';h.innerHTML='<div><h2>'+title+'</h2><p>'+({direct:'Todo lo que necesitas mientras estás en directo.',queue:'Activa, ordena y presenta solo los capítulos que quieras.',music:'Asigna y controla la banda sonora de cada GTA.',captures:'Conecta tus fuentes y ajusta los marcos de cámara y PS5.',brand:'Cambia títulos, logos y la identidad de la transmisión.',deck:'Asigna botones de Stream Deck sin plugins adicionales.',help:'Enlaces, instalación y notas para OBS.'}[id])+'</p></div>';
@@ -920,26 +955,6 @@ render(state);poll();logoStatus();musicStatus();setInterval(poll,550);setInterva
    const test=document.createElement('button');test.className='mini';test.textContent='Probar';test.addEventListener('click',async()=>{try{const res=await fetch(item.url,{cache:'no-store'});const body=await res.json();if(!res.ok)throw Error(body.error||'No se pudo ejecutar');status.textContent='Ejecutado: '+item.name}catch(e){status.textContent='No se pudo ejecutar: '+e.message}});buttons.append(copy,test);card.append(title,url,buttons);grid.append(card);}
   status.textContent='Acciones listas. Copia cada enlace en su botón de Stream Deck.';urlsLoaded=true;
  }catch(e){status.textContent='No se pudo conectar con el servidor: '+e.message}}
-  // Effective visibility during Trailer mode. PS5 preference survives and returns
-  // on exit. Camera is intentionally NEVER touched here.
-  let lastTrailerEffective=null, trailerSyncRunning=false, trailerSyncAgain=false;
-  async function reconcileTrailer(s){
-   if(!obsClient.online||!ps5ObsSelection||!$('ps5-obs-sync').checked)return;
-   if(ps5ObsSelection===obsSelection){ps5Feedback('La fuente PS5 no puede ser la misma que la webcam.',true);return}
-   const effective=!!s.ps5Frame&&!s.cinema;
-   if(lastTrailerEffective===effective)return;
-   if(trailerSyncRunning){trailerSyncAgain=true;return}
-   trailerSyncRunning=true;
-   try{
-    await setObsSourceEnabled(ps5ObsSelection,effective);
-    lastTrailerEffective=effective;
-    ps5Feedback(s.cinema?'Modo Tráiler: captura PS5 y marco ocultos; cámara intacta.':('Captura PS5 '+(effective?'restaurada':'oculta')+' en OBS.'));
-   }catch(e){ps5Feedback('No se sincronizó PS5 en OBS: '+e.message,true)}
-   finally{trailerSyncRunning=false;if(trailerSyncAgain){trailerSyncAgain=false;lastTrailerEffective=null;reconcileTrailer(state)}}
-  }
-  $('ps5-obs-source').addEventListener('change',()=>{lastTrailerEffective=null;reconcileTrailer(state)});
-  $('obs-connect').addEventListener('click',()=>{lastTrailerEffective=null;setTimeout(()=>reconcileTrailer(state),850)});
-  $('ps5-obs-sync').addEventListener('change',()=>{lastTrailerEffective=null;reconcileTrailer(state)});
  // Keep sidebar's chapter indicator in sync without replacing the existing render function.
  let lastSeq=0;let deckSyncRunning=false;
  async function reconcileDeck(s){
@@ -948,11 +963,11 @@ render(state);poll();logoStatus();musicStatus();setInterval(poll,550);setInterva
   if(s.deckAction!=='camera'&&s.deckAction!=='ps5_toggle')return;
   if(deckSyncRunning)return;deckSyncRunning=true;
   try{if(s.deckAction==='camera'&&obsSelection&&document.getElementById('obs-sync-enable').checked){await setObsSourceEnabled(obsSelection,!!s.camera);obsFeedback('Stream Deck sincronizó la cámara de OBS con el marco.');}
-      if(s.deckAction==='ps5_toggle'&&ps5ObsSelection&&document.getElementById('ps5-obs-sync').checked){await setObsSourceEnabled(ps5ObsSelection,!!s.ps5Frame&&!s.cinema);ps5Feedback('Stream Deck sincronizó la captura PS5 con el marco.');}}
+      if(s.deckAction==='ps5_toggle'&&ps5ObsSelection&&document.getElementById('ps5-obs-sync').checked){await setObsSourceEnabled(ps5ObsSelection,!!s.ps5Frame);ps5Feedback('Stream Deck sincronizó la captura PS5 con el marco.');}}
   catch(e){status.textContent='OBS no sincronizado: '+e.message;obsFeedback('Stream Deck: '+e.message,true)}finally{deckSyncRunning=false}
  }
  // Intercept existing render function without changing its own controls.
- const previousRender=window.render;window.render=function(s){previousRender(s);reconcileTrailer(s);const el=document.getElementById('side-now');if(el)el.textContent=(s.queueCount||19)+' GTA · '+(s.queuePosition||1)+' en directo';reconcileDeck(s)};
+ const previousRender=window.render;window.render=function(s){previousRender(s);const el=document.getElementById('side-now');if(el)el.textContent=(s.queueCount||19)+' GTA · '+(s.queuePosition||1)+' en directo';reconcileDeck(s)};
 })();
 </script>
 </body></html>
