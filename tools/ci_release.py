@@ -48,33 +48,46 @@ def verify(d:Path)->None:
     print('Verified syntax and required sources in',d)
 
 def smoke(d:Path)->None:
-    # Don't open a browser or attempt to download logos.
-    env=dict(os.environ)
-    env.pop('ITSOCHO_AUTO_DOWNLOAD_LOGOS',None)
-    child=subprocess.Popen([sys.executable,'-u','server.py','--no-browser'],cwd=d,env=env,
-                           stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-    try:
-        urls={'/panel':'text/html','/overlay':'text/html','/music':'text/html','/api/state':'application/json'}
-        last_error=None
-        for _ in range(40):
-            if child.poll() is not None:
-                raise RuntimeError('Server exited early with status '+str(child.returncode))
-            try:
-                with urllib.request.urlopen('http://127.0.0.1:8767/api/state',timeout=.5) as r:
-                    if r.status==200:break
-            except Exception as e:
-                last_error=e;time.sleep(.25)
-        else:
-            raise RuntimeError(f'Server did not become ready: {last_error}')
-        for path,_ in urls.items():
-            with urllib.request.urlopen('http://127.0.0.1:8767'+path,timeout=3) as r:
-                if r.status!=200:raise RuntimeError(f'{path} returned HTTP {r.status}')
-                if not r.read(256):raise RuntimeError(f'{path} returned empty body')
-        print('HTTP smoke checks passed for panel, overlay, music, state')
-    finally:
-        child.terminate()
-        try:child.wait(timeout=3)
-        except subprocess.TimeoutExpired:child.kill();child.wait(timeout=3)
+    # Smoke tests execute the app in an isolated directory. The server creates
+    # .streamdeck_token and other runtime state on startup: never write those
+    # private/generated files into the repository checkout.
+    with tempfile.TemporaryDirectory(prefix='itsocho-ci-smoke-') as tmp:
+        runtime=Path(tmp)
+        for name in ('server.py',)+HTML:
+            shutil.copy2(d/name,runtime/name)
+        for dn in DIRS:
+            src=d/dn
+            if src.is_dir():
+                shutil.copytree(src,runtime/dn,symlinks=False)
+        (runtime/'musica').mkdir(exist_ok=True)
+
+        # Don't open a browser or attempt to download logos.
+        env=dict(os.environ)
+        env.pop('ITSOCHO_AUTO_DOWNLOAD_LOGOS',None)
+        child=subprocess.Popen([sys.executable,'-u','server.py','--no-browser'],cwd=runtime,env=env,
+                               stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+        try:
+            urls={'/panel':'text/html','/overlay':'text/html','/music':'text/html','/api/state':'application/json'}
+            last_error=None
+            for _ in range(40):
+                if child.poll() is not None:
+                    raise RuntimeError('Server exited early with status '+str(child.returncode))
+                try:
+                    with urllib.request.urlopen('http://127.0.0.1:8767/api/state',timeout=.5) as r:
+                        if r.status==200:break
+                except Exception as e:
+                    last_error=e;time.sleep(.25)
+            else:
+                raise RuntimeError(f'Server did not become ready: {last_error}')
+            for path,_ in urls.items():
+                with urllib.request.urlopen('http://127.0.0.1:8767'+path,timeout=3) as r:
+                    if r.status!=200:raise RuntimeError(f'{path} returned HTTP {r.status}')
+                    if not r.read(256):raise RuntimeError(f'{path} returned empty body')
+            print('HTTP smoke checks passed for panel, overlay, music, state (isolated runtime)')
+        finally:
+            child.terminate()
+            try:child.wait(timeout=3)
+            except subprocess.TimeoutExpired:child.kill();child.wait(timeout=3)
 
 def sha256(p:Path)->str:
     h=hashlib.sha256()
