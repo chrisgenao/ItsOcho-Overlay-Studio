@@ -675,11 +675,15 @@ const liveMoves={cam:{timer:0,running:null,dirty:false},ps5:{timer:0,running:nul
 function liveMoveValues(kind){return kind==='cam'?camLayout():{x:Number($('ps5-x').value),y:Number($('ps5-y').value),width:Number($('ps5-width').value)}}
 function liveMoveValid(kind,v){return kind==='cam'?cameraLayoutValid(v):[v.x,v.y,v.width].every(Number.isInteger)&&v.width>=320&&v.width<=850&&v.x>=0&&v.y>=0&&v.x+v.width<=1920&&v.y+Math.round(v.width*9/16)<=1080}
 function queueLiveMove(kind){
- const job=liveMoves[kind];job.dirty=true;clearTimeout(job.timer);
- job.timer=setTimeout(()=>flushLiveMove(kind),125);
+ const job=liveMoves[kind];job.dirty=true;
+ // Throttle rather than debounce: continuous pointermove events must NOT
+ // postpone every OBS update until the user releases the frame.
+ // One scheduled flush at a time; the in-flight worker picks up latest values.
+ if(job.running||job.timer)return;
+ job.timer=setTimeout(()=>{job.timer=0;flushLiveMove(kind)},85);
 }
 async function flushLiveMove(kind){
- const job=liveMoves[kind];clearTimeout(job.timer);job.dirty=true;
+ const job=liveMoves[kind];clearTimeout(job.timer);job.timer=0;job.dirty=true;
  if(job.running)return job.running;
  job.running=(async()=>{
   job.error=false;
