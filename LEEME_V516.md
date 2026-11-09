@@ -5,7 +5,7 @@
 - **Modo Tráiler:** oculta el marco PS5 del overlay y, con OBS WebSocket vinculado en el panel, la fuente real de PS5. **La webcam y su marco permanecen visibles** si la cámara estaba activada.
 - Al salir de Modo Tráiler, PS5 vuelve a su visibilidad configurada. No se borra ni se modifica su posición.
 - **OBS y PS5:** la vista previa de 1920×1080 tiene dos marcos arrastrables: rosa para la cámara (4:3) y cyan para PS5 (16:9). También se pueden cambiar X/Y/ancho por separado.
-- Mientras arrastras, el panel guarda la ubicación y, si hay conexión WebSocket, ajusta la fuente real correspondiente en OBS. Las actualizaciones se agrupan para no saturar WebSocket.
+- Mientras arrastras, el panel guarda la ubicación y, si hay conexión WebSocket, ajusta la fuente real correspondiente en OBS. Las actualizaciones se agrupan a intervalos de aproximadamente 85 ms para seguir el movimiento mientras arrastras, sin saturar WebSocket; al soltar el mouse se envía la posición final.
 - La biblioteca de asignación de música por GTA de **v5.15** se conserva.
 
 ## Cómo activar la sincronización con OBS
