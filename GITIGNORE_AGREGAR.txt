@@ -1,0 +1,27 @@
+# Copiar estas líneas al .gitignore existente; no reemplazarlo automáticamente.
+.build_env/
+.venv/
+venv/
+__pycache__/
+*.pyc
+build/
+dist/
+release/
+_build_dist/
+_build_work/
+_build_spec/
+SALIDA_LISTA_PARA_COMPARTIR/
+# Datos privados creados por el panel
+musica/*.mp3
+musica/*.wav
+musica/*.ogg
+musica/*.m4a
+musica_config.json
+timeline_config.json
+camera_layout.json
+ps5_layout.json
+RUTA_PYTHON.txt
+.streamdeck_token
+ultimo_error.txt
+.env
+.env.*

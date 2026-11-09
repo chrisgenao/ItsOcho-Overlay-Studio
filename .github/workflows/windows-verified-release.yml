@@ -1,0 +1,72 @@
+name: Windows - Build, attest and draft release
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  windows:
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact repository revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify source tree
+        run: python tools/ci_release.py verify
+      - name: Smoke test unbundled server
+        run: python tools/ci_release.py smoke
+      - name: Install pinned build tool
+        run: python -m pip install --disable-pip-version-check pyinstaller==6.16.0
+      - name: Build standalone executable and release assets
+        run: python tools/ci_release.py build
+      - name: Attest Windows executable provenance
+        uses: actions/attest@v4
+        with:
+          subject-path: release/ItsOcho_Studio.exe
+      - name: Attest release ZIP provenance
+        uses: actions/attest@v4
+        with:
+          subject-path: release/ItsOcho_Studio_Windows.zip
+      - name: Store downloadable artifacts for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: ItsOcho-Studio-Windows-verified
+          path: |
+            release/ItsOcho_Studio.exe
+            release/ItsOcho_Studio_Windows.zip
+            release/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
+  publish-draft:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: windows
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ItsOcho-Studio-Windows-verified
+          path: release
+      - name: Draft GitHub Release for version tags only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          gh release create "$env:GITHUB_REF_NAME" `
+            "release/ItsOcho_Studio.exe" `
+            "release/ItsOcho_Studio_Windows.zip" `
+            "release/SHA256SUMS.txt" `
+            --repo "$env:GITHUB_REPOSITORY" --verify-tag --draft --generate-notes
